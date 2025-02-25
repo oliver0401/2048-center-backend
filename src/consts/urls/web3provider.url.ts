@@ -1,0 +1,1 @@
+export const WEB3_PROVIDER_URL: string = "https://ethereum-holesky.publicnode.com";

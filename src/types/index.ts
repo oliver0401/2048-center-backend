@@ -20,6 +20,7 @@ export enum httpStatus {
   CONFLICT = 409,
   NOT_FOUND = 404,
   ACCEPTED = 202,
+  INTERNAL_SERVER_ERROR = 500
 }
 
 export type TokenType = {
