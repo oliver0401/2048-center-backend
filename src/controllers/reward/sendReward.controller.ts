@@ -11,8 +11,8 @@ export const sendReward = async (
 ): Promise<void> => {
     // Initializa gas price strategy with config
     const gasPriceStrategy = createGasPriceStrategy({
-        minGasPriceGwei: 50,
-        maxGasPriceGwei: 500,
+        minGasPriceGwei: 5,
+        maxGasPriceGwei: 50,
         baseIncrease: 10
     });
 

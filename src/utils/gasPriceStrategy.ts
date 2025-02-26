@@ -11,8 +11,8 @@ export const createGasPriceStrategy = (config?: GasPriceConfig) => {
     let lastGasPrice: bigint = BigInt(0);
 
     // Constants with defaults
-    const MIN_GAS_PRICE = BigInt((config?.minGasPriceGwei || 50) * 1e9);
-    const MAX_GAS_PRICE = BigInt((config?.maxGasPriceGwei || 500) * 1e9);
+    const MIN_GAS_PRICE = BigInt((config?.minGasPriceGwei || 5) * 1e9);
+    const MAX_GAS_PRICE = BigInt((config?.maxGasPriceGwei || 50) * 1e9);
     const BASE_INCREASE = BigInt(config?.baseIncrease || 10);
 
     // Helper function to keep gas price within range
