@@ -1,5 +1,5 @@
 {
-  "address": "0xEb3eB2A719C908516053305B447105AC1AaAbd26",
+  "address": "0xe29fd88a43622709D5564f9B48E0df70969f5d03",
   "abi": [
     {
       "inputs": [
@@ -33,25 +33,6 @@
       ],
       "name": "OwnableUnauthorizedAccount",
       "type": "error"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "tokenAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "ItemsPurchased",
-      "type": "event"
     },
     {
       "anonymous": false,
@@ -115,19 +96,6 @@
       ],
       "name": "TokensPurchased",
       "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "gameTokenAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "buyItemsWithGameTokens",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
     },
     {
       "inputs": [

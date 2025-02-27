@@ -53,19 +53,17 @@ export const sendReward = async (
         console.log(`User Balance: ${userBalance}`);
         console.log(`RewardContract Balance: ${rewardContractBalance}`);
         
-        // Ensure the contract has sufficient balance to send the reward
-        if (!rewardContractBalance) {
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: "error",
-                message: "Failed to fetch reward contract balance",
-            });
-        }
+        // // Ensure the contract has sufficient balance to send the reward
+        // if (!rewardContractBalance) {
+        //     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        //         status: "error",
+        //         message: "Failed to fetch reward contract balance",
+        //     });
+        // }
 
         if (rewardContractBalance < BigInt(amount)) {
-            res.status(httpStatus.BAD_REQUEST).json({
-                status: "error",
-                message: "Insufficient reward contract balance",
-            });
+            res.json(MESSAGE.RESPONSE.INSUFFICIENT_REWARD_CONTRACT_BALANCE)
+                .status(httpStatus.BAD_REQUEST);
         }
 
         //Distribute reward
@@ -86,24 +84,17 @@ export const sendReward = async (
             const rewardTxReceipt = await web3.eth.sendSignedTransaction(signedRewardTx.rawTransaction!);
             console.log("Reward transaction hash:", rewardTxReceipt.transactionHash);
 
-            res.status(httpStatus.OK).json({
-                status: "success",
-                message: MESSAGE.RESPONSE.REWARDED_SUCCESS,
-                amount: amount
-            });
+            res.json({message: MESSAGE.RESPONSE.REWARDED_SUCCESS, amount: amount})
+                .status(httpStatus.OK);
         } catch (txError) {
             console.log("Transaction failed: ", txError);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: "error",
-                message: "Transaction execution failed"
-            });
+            res.json(MESSAGE.RESPONSE.TRANSACTION_EXECUTION_FAILED)
+                .status(httpStatus.INTERNAL_SERVER_ERROR);
         }
     } catch (error) {
         console.log("Unexpected error: ", error);
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: "error",
-            message: "An unexpected error occurred"
-        });
+        res.json(MESSAGE.RESPONSE.UNEXPECTED_ERROR)
+            .status(httpStatus.INTERNAL_SERVER_ERROR);
     }
     
     
