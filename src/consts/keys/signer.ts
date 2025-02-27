@@ -1,0 +1,1 @@
+export const SIGNER_PRIVATE_KEY: string = "0x8d1ec368ca7dc66e96f097391ae1703dbb28801b049cbe06360bdf916a6bed66";

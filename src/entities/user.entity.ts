@@ -35,8 +35,8 @@ export class UserEntity extends CoreEntity {
   hammer: number;
 
   @Column({ type: "int", nullable: false, default: 0 })
-  bolt: number;
+  upgrade: number;
 
   @Column({ type: "int", nullable: false, default: 0 })
-  bomb: number;
+  powerup: number;
 }
