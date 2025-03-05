@@ -28,15 +28,8 @@ export const sendReward = async (
         if (!privateKey) {
             throw new Error("Private key is missing in environment variables.");
         }
-        // if (privateKey.startsWith("0x")) {
-        //     privateKey = privateKey.substring(2);
-        // }
-
-        console.log("Using Private Key:", typeof(privateKey));
-        console.log("Private Key Length:", privateKey.length);
 
         const signer = web3.eth.accounts.privateKeyToAccount(privateKey);
-        console.log(signer.address);
         web3.eth.accounts.wallet.add(signer);
 
         // Get current nonce and gas price
@@ -44,7 +37,6 @@ export const sendReward = async (
         
         // Get optimal gas price for approve transaction
         const rewardGasPrice = await gasPriceStrategy.getOptimalGasPrice(web3, nonce);
-        console.log(`Reward gas price: ${gasPriceStrategy.getGasPriceInGwei(rewardGasPrice)} Gwei`);
 
         const tokenContract = new web3.eth.Contract(
             CONTRACT.TOKEN_CONTRACT_INFO.abi, 

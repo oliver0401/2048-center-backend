@@ -22,7 +22,6 @@ export const getUserHandler = async (
   const findUser = await userService.getOneUser({ uuid });
   if (!findUser) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
   const { password, createdAt, updatedAt, deletedAt, ...user } = findUser;
-  console.log("getUserHandler", user);
   res.json({ ...user }).status(httpStatus.ACCEPTED);
 };
 
