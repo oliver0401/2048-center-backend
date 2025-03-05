@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { Web3 } from "web3";
 import { httpStatus } from "types";
-import { MESSAGE, KEY, URL, CONTRACT } from "consts";
+import { MESSAGE, URL, CONTRACT } from "consts";
 import { errorHandlerWrapper } from "utils/errorHandler";
 import { createGasPriceStrategy } from "utils/gasPriceStrategy";
+import { Env } from "../../env";
 
 export const sendReward = async (
     req: Request,
@@ -15,7 +16,6 @@ export const sendReward = async (
         maxGasPriceGwei: 50,
         baseIncrease: 10
     });
-
     try {
         const { address, amount } = req.body;
 
@@ -24,7 +24,12 @@ export const sendReward = async (
                 URL.WEB3_PROVIDER_URL
             )
         );
-        const signer = web3.eth.accounts.privateKeyToAccount(KEY.SIGNER_PRIVATE_KEY);
+        let privateKey = Env.signerKey;
+        if (!privateKey) {
+            throw new Error("Private key is missing in environment variables.");
+        }
+
+        const signer = web3.eth.accounts.privateKeyToAccount(privateKey);
         web3.eth.accounts.wallet.add(signer);
 
         // Get current nonce and gas price
@@ -32,7 +37,6 @@ export const sendReward = async (
         
         // Get optimal gas price for approve transaction
         const rewardGasPrice = await gasPriceStrategy.getOptimalGasPrice(web3, nonce);
-        console.log(`Reward gas price: ${gasPriceStrategy.getGasPriceInGwei(rewardGasPrice)} Gwei`);
 
         const tokenContract = new web3.eth.Contract(
             CONTRACT.TOKEN_CONTRACT_INFO.abi, 
@@ -93,7 +97,7 @@ export const sendReward = async (
         }
     } catch (error) {
         console.log("Unexpected error: ", error);
-        res.json(MESSAGE.RESPONSE.UNEXPECTED_ERROR)
+        res.json(error)
             .status(httpStatus.INTERNAL_SERVER_ERROR);
     }
     

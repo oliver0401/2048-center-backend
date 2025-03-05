@@ -13,4 +13,5 @@ export const Env: EnvType = {
   secretKey: process.env.SECRET_KEY,
   expiresIn: Number(process.env.EXPIRE_TIME) || 3600,
   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+  signerKey: process.env.SIGNER_KEY,
 };

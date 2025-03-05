@@ -1,0 +1,1 @@
+export const CONVERT_AMOUNT = 10 ** 18;

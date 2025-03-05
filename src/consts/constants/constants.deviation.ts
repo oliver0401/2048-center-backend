@@ -1,0 +1,1 @@
+export const DEVIATION_AMOUNT = 10 ** 9;

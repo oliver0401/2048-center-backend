@@ -8,6 +8,7 @@ export type EnvType = {
   secretKey: string;
   expiresIn: number;
   stripeSecretKey: string;
+  signerKey: string;
 };
 
 
