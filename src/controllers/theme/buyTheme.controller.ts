@@ -89,12 +89,12 @@ const buyThemeHandler = async (req: Request, res: Response) => {
     }
 
     if (tokenType === "bnb" || tokenType === "fuse") {
+
       const convertedAmount = amount * await getUsdtPriceInNativeToken(tokenType);
-      // console.log(Number(tx.value));
-      // console.log(Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT));
+
       if (tx.from.toLowerCase() !== fromAddr.toLowerCase() ||
-        tx.to.toLowerCase() !== toAddr.toLowerCase() ||
-        (Math.abs(Number(tx.value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)) {
+          tx.to.toLowerCase() !== toAddr.toLowerCase() ||
+          (Math.abs(Number(tx.value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)) {
         throw new BadRequestError(MESSAGE.RESPONSE.WRONG_TRANSACTION_DETAIL);
       }
     } else {
