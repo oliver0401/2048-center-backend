@@ -11,7 +11,6 @@ const setupServer = async () => {
     Logger.info(MESSAGE.DATABASE.MIGARATION_SUCCESS);
     await AppDataSource.initialize();
     Logger.info(MESSAGE.DATABASE.CONNECTION_SUCCESS);
-    Logger.info(process.env.SIGNER_KEY);
   } catch (error) {
     Logger.info(MESSAGE.DATABASE.CONNECTION_FAILURE);
     Logger.error(error);

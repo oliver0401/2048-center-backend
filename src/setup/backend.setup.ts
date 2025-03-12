@@ -5,7 +5,7 @@ import { Env } from "../env";
 import { Logger } from "../utils";
 import { MESSAGE } from "../consts";
 import { appRouter } from "../routes";
-import { errorHandlerMiddleware, routeMiddleware } from "../middlewares";
+import { errorHandlerMiddleware, routeMiddleware, clerkMiddleware } from "../middlewares";
 
 
 export const backendSetup = () => {
@@ -15,6 +15,9 @@ export const backendSetup = () => {
   app.use(bodyParser());
 
   app.use(routeMiddleware);
+  
+  // Add Clerk webhook middleware to handle user creation events
+  app.use("/webhook", clerkMiddleware);
 
   app.use("/health", (_req: Request, res: Response) =>
     res.send(MESSAGE.SERVER.HELLO_WORLD)

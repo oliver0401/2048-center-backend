@@ -1,10 +1,9 @@
 import { UserEntity } from "../entities";
 import { AppDataSource } from "../setup";
-import { UserType } from "../types";
 import { Repository } from "typeorm";
 
 export const createUser = async (
-  data: UserType
+  data: Partial<UserEntity>
 ): Promise<Omit<UserEntity, "password"> | null> => {
   const { username, email, password } = data;
   const userRepository: Repository<UserEntity> =
