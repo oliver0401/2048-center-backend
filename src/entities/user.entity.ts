@@ -13,6 +13,9 @@ export class UserEntity extends CoreEntity {
   @Column({ type: "varchar", nullable: false })
   password: string;
 
+  @Column({ type: "varchar", nullable: false })
+  clerkId: string;
+
   @Column({ type: "int", nullable: true, default: 0 })
   maxScore: number;
 

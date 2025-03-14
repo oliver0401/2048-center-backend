@@ -50,7 +50,7 @@ router.post("/", async (req: Request, res: Response) => {
     try {
       // Create a new user in your database
       await userService.createUser({
-        uuid: data.id,
+        clerkId: data.id,
         email: data.email_addresses[0]?.email_address,
         username: `${data.first_name} ${data.last_name}`
       });

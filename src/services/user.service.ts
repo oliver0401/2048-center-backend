@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 export const createUser = async (
   data: Partial<UserEntity>
 ): Promise<Omit<UserEntity, "password"> | null> => {
-  const { username, email, password } = data;
+  const { username, email, password, clerkId } = data;
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const existingUser = await userRepository.findOne({
@@ -15,7 +15,7 @@ export const createUser = async (
     return null;
   }
 
-  const user: UserEntity = userRepository.create({ username, email, password });
+  const user: UserEntity = userRepository.create({ username, email, password, clerkId });
   await userRepository.save(user);
 
   return user;
