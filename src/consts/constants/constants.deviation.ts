@@ -1,1 +1,1 @@
-export const DEVIATION_AMOUNT = 10 ** 9;
+export const DEVIATION_AMOUNT = 10 ** 15;

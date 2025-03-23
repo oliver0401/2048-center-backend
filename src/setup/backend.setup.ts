@@ -30,6 +30,6 @@ export const backendSetup = () => {
   const { port } = Env;
 
   app.listen(port, () => {
-    Logger.info(MESSAGE.SERVER.STARTING_SUCCESS);
+    Logger.info(`Server is running on ${port}`);
   });
 };

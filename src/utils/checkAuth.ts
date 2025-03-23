@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import { Env } from "../env";
 import { userService } from "../services";
 import { Logger } from "./logger";
 import { NotFoundError, UnauthorizedError } from "../errors";
 import { MESSAGE } from "../consts";
-import { TokenType } from "../types";
-
+import { verifyToken } from "@clerk/backend";
 declare global {
   namespace Express {
     interface Request {
@@ -23,8 +21,8 @@ export const checkAuth = async (
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     const { secretKey } = Env;
-    const { uuid } = jwt.verify(token, secretKey) as TokenType;
-    const user = await userService.getOneUser({ uuid });
+    const decoded = await verifyToken(token, { jwtKey: secretKey});
+    const user = await userService.getOneUser({ clerkId: decoded.id as string });
     if (!user) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
     if (user.deletedAt)
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);

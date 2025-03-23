@@ -15,14 +15,19 @@ export const createUser = async (
     return null;
   }
 
-  const user: UserEntity = userRepository.create({ username, email, password, clerkId });
+  const user: UserEntity = userRepository.create({
+    username,
+    email,
+    password,
+    clerkId,
+  });
   await userRepository.save(user);
 
   return user;
 };
 
 export const getOneUser = async (
-  data: Partial<Pick<UserEntity, "uuid" | "email">>
+  data: Partial<Pick<UserEntity, "uuid" | "email" | "clerkId">>
 ): Promise<UserEntity> | null => {
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
@@ -71,6 +76,33 @@ export const updateUser = async (
   }
 
   Object.assign(findUser, updateData);
+  const updateUser = await userRepository.save(findUser);
+  return updateUser;
+};
+
+export const updateItem = async (
+  uuid: string,
+  itemId: string,
+  quantity: number
+): Promise<UserEntity | null> => {
+  const userRepository: Repository<UserEntity> =
+    AppDataSource.getRepository(UserEntity);
+  const findUser: UserEntity = await userRepository.findOne({
+    where: { uuid },
+  });
+
+  if (itemId === "hammer") {
+    findUser.hammer += quantity;
+  }
+
+  if (itemId === "powerup") {
+    findUser.powerup += quantity;
+  }
+
+  if (itemId === "upgrade") {
+    findUser.upgrade += quantity;
+  }
+
   const updateUser = await userRepository.save(findUser);
   return updateUser;
 };

@@ -131,6 +131,12 @@ const buyThemeHandler = async (req: Request, res: Response) => {
       const convertedAmount = amount * await getUsdtPriceInNativeToken(tokenType);
       console.log(Number(value));
       console.log(Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT));
+      console.log(Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)));
+      console.log(CONSTANTS.DEVIATION_AMOUNT);
+      console.log(sender);
+      console.log(fromAddr.toLowerCase());
+      console.log(recipient);
+      console.log(toAddr.toLowerCase());
       if (sender !== fromAddr.toLowerCase() ||
         recipient !== toAddr.toLowerCase() ||
         (Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)

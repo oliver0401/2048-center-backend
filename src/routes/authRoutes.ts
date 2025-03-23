@@ -8,5 +8,6 @@ router.post("/signup", authController.registerController);
 router.post("/signin", authController.loginController);
 router.get("/", checkAuth, authController.getUserController);
 router.put("/", checkAuth, authController.updateUserController);
+router.put("/:itemId", checkAuth, authController.updateItemController);
 
 export default router;
