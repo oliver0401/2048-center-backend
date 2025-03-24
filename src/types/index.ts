@@ -9,6 +9,7 @@ export type EnvType = {
   expiresIn: number;
   stripeSecretKey: string;
   signerKey: string;
+  fuseSignerKey: string;
 };
 
 
