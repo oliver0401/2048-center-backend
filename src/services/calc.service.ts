@@ -57,7 +57,7 @@ export const maxMoveCount = async (uuid: string) => {
       order: {
         maxMoves: "DESC",
       },
-      select: { email: true, maxMoves: true, username: true },
+      select: { maxMoves: true },
       take: 10,
     });
 
@@ -95,7 +95,7 @@ export const maxScoreCount = async (uuid: string) => {
       order: {
         maxScore: "DESC",
       },
-      select: { email: true, username: true, maxScore: true },
+      select: { maxScore: true },
       take: 10,
     });
     const userRank = await userRepository

@@ -5,11 +5,12 @@ import { Request, Response } from "express";
 import { httpStatus } from "../../types";
 import { MESSAGE } from "consts";
 import { NotFoundError } from "errors";
+import { UserEntity } from "entities";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: { uuid: string };
+      user?: UserEntity;
     }
   }
 }
@@ -18,12 +19,7 @@ export const getUserHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { uuid } = req.user;
-  const findUser = await userService.getOneUser({ uuid });
-  if (!findUser) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
-  const { password, createdAt, updatedAt, deletedAt, ...user } = findUser;
-  console.log(user);
-  res.json({ ...user }).status(httpStatus.ACCEPTED);
+  res.json({ ...req.user }).status(httpStatus.ACCEPTED);
 };
 
 export const getUserController = errorHandlerWrapper(getUserHandler);

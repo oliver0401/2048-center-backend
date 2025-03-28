@@ -1,17 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { Env } from "../env";
 import { userService } from "../services";
 import { Logger } from "./logger";
 import { NotFoundError, UnauthorizedError } from "../errors";
 import { MESSAGE } from "../consts";
-import { verifyToken } from "@clerk/backend";
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { uuid: string };
-    }
-  }
-}
 
 export const checkAuth = async (
   req: Request,
@@ -19,10 +10,8 @@ export const checkAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    const { secretKey } = Env;
-    const decoded = await verifyToken(token, { jwtKey: secretKey});
-    const user = await userService.getOneUser({ clerkId: decoded.id as string });
+    const address = req.header("Authorization");
+    const user = await userService.getOneUser({ address });
     if (!user) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
     if (user.deletedAt)
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);

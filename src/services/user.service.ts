@@ -5,29 +5,24 @@ import { Repository } from "typeorm";
 export const createUser = async (
   data: Partial<UserEntity>
 ): Promise<Omit<UserEntity, "password"> | null> => {
-  const { username, email, password, clerkId } = data;
+  const { address } = data;
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const existingUser = await userRepository.findOne({
-    where: { email },
+    where: { address },
   });
   if (existingUser) {
     return null;
   }
 
-  const user: UserEntity = userRepository.create({
-    username,
-    email,
-    password,
-    clerkId,
-  });
+  const user: UserEntity = userRepository.create({ address });
   await userRepository.save(user);
 
   return user;
 };
 
 export const getOneUser = async (
-  data: Partial<Pick<UserEntity, "uuid" | "email" | "clerkId">>
+  data: Partial<UserEntity>
 ): Promise<UserEntity> | null => {
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
@@ -40,24 +35,6 @@ export const getOneUser = async (
   }
 
   return findUser;
-};
-
-export const resetPassword = async (
-  data: Pick<UserEntity, "email" | "password">
-): Promise<void> | null => {
-  const { email, password } = data;
-  const userRepository: Repository<UserEntity> =
-    AppDataSource.getRepository(UserEntity);
-  const findUser: UserEntity = await userRepository.findOne({
-    where: { email },
-  });
-
-  if (!findUser) {
-    return null;
-  }
-
-  findUser.password = password;
-  await userRepository.save(findUser);
 };
 
 export const updateUser = async (

@@ -4,8 +4,7 @@ import { checkAuth } from "utils/checkAuth";
 
 const router = Router();
 
-router.post("/signup", authController.registerController);
-router.post("/signin", authController.loginController);
+router.post("/", authController.registerController);
 router.get("/", checkAuth, authController.getUserController);
 router.put("/", checkAuth, authController.updateUserController);
 router.put("/:itemId", checkAuth, authController.updateItemController);
