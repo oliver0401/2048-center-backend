@@ -2,8 +2,8 @@ import { Response } from "express";
 
 import { Request } from "express";
 import { httpStatus } from "types";
-import { errorHandlerWrapper } from "utils/errorHandler";
-import { calcService } from "services";
+import { errorHandlerWrapper } from "utils";
+import { calcService } from "../../services";
 
 export const maxMoveHandler = async (
     req: Request,

@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Request } from "express";
 import Web3 from "web3";
 import dotenv from "dotenv";
-import { themeService } from "services";
+import { themeService } from "../../services";
 import { httpStatus } from "types";
 import { errorHandlerWrapper } from "utils";
-import { CONTRACT, MESSAGE, ADDRESSES, CONSTANTS } from 'consts';
-import { BadRequestError } from "errors/badRequest.error";
+import { MESSAGE, ADDRESSES, CONSTANTS } from 'consts';
+import { BadRequestError } from "../../errors/badRequest.error";
 
 dotenv.config();
 

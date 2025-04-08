@@ -1,10 +1,7 @@
-import { userService } from "../../services";
 import { errorHandlerWrapper } from "../../utils";
 import { Request, Response } from "express";
 
 import { httpStatus } from "../../types";
-import { MESSAGE } from "consts";
-import { NotFoundError } from "errors";
 import { UserEntity } from "entities";
 
 declare global {
@@ -21,5 +18,5 @@ export const getUserHandler = async (
 ): Promise<void> => {
   res.json({ ...req.user }).status(httpStatus.ACCEPTED);
 };
-
 export const getUserController = errorHandlerWrapper(getUserHandler);
+

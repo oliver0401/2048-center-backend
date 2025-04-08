@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "target": "es6",
+      "target": "es2016",
       "module": "commonjs",
       "moduleResolution": "node",
       "rootDir": "src",
@@ -26,6 +26,7 @@
       "noImplicitAny": false,
       "strictBindCallApply": false,
       "noFallthroughCasesInSwitch": false,
+      "jsx": "react"
     },
     "ts-node": {
       "require": ["tsconfig-paths/register"]

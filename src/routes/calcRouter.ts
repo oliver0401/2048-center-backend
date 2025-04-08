@@ -1,6 +1,6 @@
-import { calcController } from "controllers";
+import { calcController } from "../controllers";
 import { Router } from "express";
-import { checkAuth } from "utils/checkAuth";
+import { checkAuth } from "../utils";
 
 const router = Router();
 

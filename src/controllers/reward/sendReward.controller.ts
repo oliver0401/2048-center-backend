@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { Web3 } from "web3";
 import { httpStatus } from "types";
 import { MESSAGE, URL, CONTRACT } from "consts";
-import { errorHandlerWrapper } from "utils/errorHandler";
-import { createGasPriceStrategy } from "utils/gasPriceStrategy";
+import { errorHandlerWrapper, createGasPriceStrategy } from "utils";
 import { Env } from "../../env";
 
 export const sendReward = async (

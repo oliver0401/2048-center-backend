@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorHandlerWrapper } from "../../utils";
-import { updateItem } from "services/user.service";
+import { updateItem } from "../../services/user.service";
 import { NotFoundError } from "errors";
 import { MESSAGE } from "consts";
 import { httpStatus } from "types";
