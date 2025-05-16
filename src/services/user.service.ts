@@ -31,7 +31,8 @@ export const getOneUser = async (
   });
 
   if (!findUser) {
-    return null;
+    const newUser = await createUser({ address: data.address });
+    return newUser;
   }
 
   return findUser;
