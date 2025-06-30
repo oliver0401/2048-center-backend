@@ -27,6 +27,7 @@ export const getOneUser = async (
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const findUser: UserEntity = await userRepository.findOne({
+    relations: ["themes"],
     where: { ...data },
   });
 

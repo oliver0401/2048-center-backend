@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, ManyToMany, JoinTable, JoinColumn, ManyToOne } from "typeorm";
 import { CoreEntity } from "./core.entity";
 import { UserEntity } from "./user.entity";
 
@@ -10,56 +10,99 @@ export class ThemeEntity extends CoreEntity {
   @Column({ type: "varchar", nullable: true })
   description: string;
 
-  @Column({ type: "text", nullable: true })
-  2: string;
+  @Column({ type: "json", nullable: true })
+  2: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  4: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  8: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  16: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  32: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  64: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  128: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  256: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  512: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  1024: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  2048: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  4096: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  8192: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  16384: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  32768: Record<string, string>;
+
+  @Column({ type: "json", nullable: true })
+  65536: Record<string, string>;
+
+  @Column({ type: "boolean", nullable: true })
+  numberDisplay: boolean;
 
   @Column({ type: "text", nullable: true })
-  4: string;
+  numberColor: string;
 
-  @Column({ type: "text", nullable: true })
-  8: string;
+  @Column({ type: "int", nullable: true })
+  numberSize: number;
 
-  @Column({ type: "text", nullable: true })
-  16: string;
-  
-  @Column({ type: "text", nullable: true })
-  32: string;
+  @Column({
+    type: "enum",
+    enum: ["center", "top-left", "bottom-right", "top-right", "bottom-left"],
+    nullable: true,
+  })
+  position:
+    | "center"
+    | "top-left"
+    | "bottom-right"
+    | "top-right"
+    | "bottom-left";
 
-  @Column({ type: "text", nullable: true })
-  64: string;
-  
-  @Column({ type: "text", nullable: true })
-  128: string;
+  @Column({
+    type: "enum",
+    enum: ["premium", "public", "private"],
+    nullable: true,
+  })
+  visibility: "premium" | "public" | "private";
 
-  @Column({ type: "text", nullable: true })
-  256: string;
-  
-  @Column({ type: "text", nullable: true })
-  512: string;
+  @Column({ type: "int", nullable: true })
+  price: number;
 
-  @Column({ type: "text", nullable: true })
-  1024: string;
-  
-  @Column({ type: "text", nullable: true })
-  2048: string;
+  @Column({ nullable: true })
+  creator_id: string;
 
-  @Column({ type: "text", nullable: true })
-  4096: string;
-
-  @Column({ type: "text", nullable: true })
-  8192: string;
-
-  @ManyToMany(() => UserEntity, user => user.themes)
+  @ManyToMany(() => UserEntity, (user) => user.themes)
   @JoinTable({
     name: "user_themes", // name of the join table
     joinColumn: {
       name: "theme_id",
-      referencedColumnName: "uuid"
+      referencedColumnName: "uuid",
     },
     inverseJoinColumn: {
       name: "user_id",
-      referencedColumnName: "uuid"
-    }
+      referencedColumnName: "uuid",
+    },
   })
   users: UserEntity[];
 }

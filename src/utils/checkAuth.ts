@@ -15,7 +15,7 @@ export const checkAuth = async (
     if (!user) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
     if (user.deletedAt)
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);
-    req.user = { ...user };
+    req.user = { ...user, countThemes: user.themes.length };
     next();
   } catch (err) {
     Logger.error(err);

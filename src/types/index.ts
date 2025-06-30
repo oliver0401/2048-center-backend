@@ -34,3 +34,10 @@ export type UserType = {
   email: string;
   password: string;
 };
+
+export enum ThemeVisibility {
+  PUBLIC = "public",
+  PRIVATE = "private",
+  PREMIUM = "premium",
+  ALL = "all",
+}

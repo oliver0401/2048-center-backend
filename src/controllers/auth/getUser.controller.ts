@@ -7,7 +7,7 @@ import { UserEntity } from "entities";
 declare global {
   namespace Express {
     interface Request {
-      user?: UserEntity;
+      user?: UserEntity & { countThemes: number };
     }
   }
 }

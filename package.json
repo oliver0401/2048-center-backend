@@ -14,7 +14,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.817.0",
     "@clerk/backend": "^1.25.2",
+    "@types/multer": "^1.4.12",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.8.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -22,12 +25,14 @@
     "express": "^4.17.1",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
     "mysql": "^2.18.1",
     "stripe": "^17.6.0",
     "svix": "^1.61.3",
     "typeorm": "0.3.20",
     "typeorm-extension": "^3.6.3",
     "typeorm-naming-strategies": "^4.1.0",
+    "uuid": "^11.1.0",
     "web3": "^4.16.0"
   },
   "devDependencies": {

@@ -2,16 +2,15 @@ import { themeService } from "../../services";
 import { errorHandlerWrapper } from "../../utils";
 import { Request, Response } from "express";
 
-import { httpStatus } from "../../types";
+import { httpStatus, ThemeVisibility } from "../../types";
 
 const getThemeHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  console.log("getThemeHandler");
-  const { uuid } = req.user;
-  console.log(uuid);
-  const themes = await themeService.getThemes(uuid);
+  const { uuid, address } = req.user;
+  const { visibility } = req.params;
+  const themes = await themeService.getThemes(uuid, address, visibility as ThemeVisibility);
   res.json(themes).status(httpStatus.ACCEPTED);
 };
 
