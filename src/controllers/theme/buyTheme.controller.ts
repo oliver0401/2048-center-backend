@@ -129,9 +129,9 @@ const buyThemeHandler = async (req: Request, res: Response) => {
       const value: bigint = decodedLog.value;
       
       const convertedAmount = amount * await getUsdtPriceInNativeToken(tokenType);
-      console.log(Number(value));
-      console.log(Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT));
-      console.log(Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)));
+      console.log(Number(value));//10^16
+      console.log(Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)); // 10^17
+      console.log(Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT))); //10^25
       console.log(CONSTANTS.DEVIATION_AMOUNT);
       console.log(sender);
       console.log(fromAddr.toLowerCase());

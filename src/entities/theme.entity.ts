@@ -86,7 +86,7 @@ export class ThemeEntity extends CoreEntity {
   })
   visibility: "premium" | "public" | "private";
 
-  @Column({ type: "int", nullable: true })
+  @Column({ type: "float", nullable: true })
   price: number;
 
   @Column({ nullable: true })

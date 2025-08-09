@@ -66,6 +66,7 @@ export const getThemes = async (
       relations: ["users"],
       where: { visibility },
     });
+    console.log(themes.map((theme) => theme.price))
     return themes.map((theme) => ({
       ...theme,
       2: theme[2],

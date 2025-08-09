@@ -64,6 +64,7 @@ export const sendReward = async (
         console.log("Fetching balances...");
         const userBalance = await tokenContract.methods.balanceOf(address).call();
         const rewardContractBalance = await tokenContract.methods.balanceOf(CONTRACT.REWARD_CONTRACT_INFO.address).call() as bigint;
+        const rewardAmountWei = web3.utils.toWei(amount, 'ether');
         console.log(`User Balance: ${userBalance}`);
         console.log(`RewardContract Balance: ${rewardContractBalance}`);
 
@@ -74,7 +75,7 @@ export const sendReward = async (
         console.log(`FUSE Reward Amount: ${fuseRewardWei}`);
 
         // Check if we have enough balances for both rewards
-        if (rewardContractBalance < BigInt(amount)) {
+        if (rewardContractBalance < BigInt(rewardAmountWei)) {
             res.status(httpStatus.BAD_REQUEST)
                 .json(MESSAGE.RESPONSE.INSUFFICIENT_REWARD_CONTRACT_BALANCE);
         }
@@ -88,7 +89,7 @@ export const sendReward = async (
         console.log("Distributing rewards...");
         
         // 1. Game token reward transaction
-        const rewardData = rewardContract.methods.distributeReward(address, amount).encodeABI();
+        const rewardData = rewardContract.methods.distributeReward(address, rewardAmountWei).encodeABI();
         const rewardTransaction = {
             from: signer.address,
             to: CONTRACT.REWARD_CONTRACT_INFO.address,
