@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { userService } from "../services";
 import { Logger } from "./logger";
-import { NotFoundError, UnauthorizedError } from "../errors";
+import { UnauthorizedError } from "../errors";
 import { MESSAGE } from "../consts";
 
 export const checkAuth = async (
@@ -11,10 +11,24 @@ export const checkAuth = async (
 ): Promise<void> => {
   try {
     const address = req.header("Authorization");
-    const user = await userService.getOneUser({ address });
-    if (!user) throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
-    if (user.deletedAt)
+    if (!address) {
+      throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
+    }
+    
+    let user = await userService.getOneUser({ address });
+    
+    // If user doesn't exist, create a new one
+    if (!user) {
+      user = await userService.createUser({ address });
+      if (!user) {
+        throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
+      }
+    }
+    
+    if (user.deletedAt) {
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);
+    }
+    
     req.user = { ...user, countThemes: user.themes.length };
     next();
   } catch (err) {

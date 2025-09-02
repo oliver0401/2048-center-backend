@@ -5,6 +5,17 @@ import { Repository } from "typeorm";
 import { MESSAGE } from "consts";
 import { ThemeVisibility } from "../types";
 
+export const getPublicThemes = async (
+  visibility: Exclude<ThemeVisibility, "all">
+): Promise<ThemeEntity[]> => {
+  const themeRepository: Repository<ThemeEntity> =
+    AppDataSource.getRepository(ThemeEntity);
+  const themes = await themeRepository.find({
+    where: { visibility },
+  });
+  return themes;
+};
+
 export const getThemes = async (
   userUuid: string,
   address: string,

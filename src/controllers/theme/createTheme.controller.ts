@@ -38,7 +38,7 @@ async function uploadFileToS3(file: Express.Multer.File, path: string): Promise<
   const fileName = `${path}/${uuidv4()}.${fileExtension}`;
   
   const command = new PutObjectCommand({
-    Bucket: process.env.AWS_S3_BUCKET_NAME || 'kingoverroad',
+    Bucket: process.env.AWS_S3_BUCKET_NAME || 'evofuse2048',
     Key: fileName,
     Body: file.buffer,
     ContentType: file.mimetype,

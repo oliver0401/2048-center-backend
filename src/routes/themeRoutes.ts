@@ -4,7 +4,8 @@ import { checkAuth } from "../utils/checkAuth";
 
 const themeRouter = Router();
 
-themeRouter.get("/:visibility", checkAuth, themeController.getThemeController);
+themeRouter.get("/private/:visibility", checkAuth, themeController.getThemeController);
+themeRouter.get("/public/:visibility", themeController.getPublicThemeController);
 themeRouter.post("/created", checkAuth, themeController.getCreatedThemesController);
 themeRouter.post("/", checkAuth, themeController.createThemeController);
 themeRouter.post("/buy", checkAuth, themeController.buyThemeController);
