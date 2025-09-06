@@ -30,7 +30,8 @@ describe("getUserHandler", () => {
         maxTile: 0,
         rows: 0,
         cols: 0,
-        themes: [],
+        userThemes: [],
+        countThemes: 0,
       },
     };
 
@@ -99,7 +100,8 @@ describe("getUserController with auth middleware", () => {
         maxTile: 0,
         rows: 0,
         cols: 0,
-        themes: [],
+        userThemes: [],
+        countThemes: 0,
       };
       next();
     };

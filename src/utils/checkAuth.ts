@@ -29,7 +29,7 @@ export const checkAuth = async (
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);
     }
     
-    req.user = { ...user, countThemes: user.themes.length };
+    req.user = { ...user, countThemes: user.userThemes.length };
     next();
   } catch (err) {
     Logger.error(err);

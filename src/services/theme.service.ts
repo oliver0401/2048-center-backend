@@ -1,5 +1,5 @@
 import { NotFoundError } from "errors";
-import { ThemeEntity, UserEntity } from "../entities";
+import { ThemeEntity, UserEntity, UserThemeEntity } from "../entities";
 import { AppDataSource } from "../setup";
 import { Repository } from "typeorm";
 import { MESSAGE } from "consts";
@@ -23,17 +23,21 @@ export const getThemes = async (
 ): Promise<ThemeEntity[]> => {
   const themeRepository: Repository<ThemeEntity> =
     AppDataSource.getRepository(ThemeEntity);
+  const userThemeRepository: Repository<UserThemeEntity> =
+    AppDataSource.getRepository(UserThemeEntity);
 
   let privateThemes: ThemeEntity[];
   let premiumThemes: ThemeEntity[];
   let publicThemes: ThemeEntity[];
+  
   if (visibility === ThemeVisibility.ALL) {
     // If visibility is ALL, get all themes but later filter for owned ones
     // Get private and premium themes owned by the user
     // Query all themes at once with more efficient filtering
     const allThemes = await themeRepository
       .createQueryBuilder("theme")
-      .leftJoinAndSelect("theme.users", "user")
+      .leftJoinAndSelect("theme.userThemes", "userTheme")
+      .leftJoinAndSelect("userTheme.user", "user")
       .where("(theme.visibility = :private AND user.uuid = :userUuid)", {
         private: "private",
         userUuid,
@@ -49,6 +53,7 @@ export const getThemes = async (
     privateThemes = allThemes.filter((theme) => theme.visibility === "private");
     premiumThemes = allThemes.filter((theme) => theme.visibility === "premium");
     publicThemes = allThemes.filter((theme) => theme.visibility === "public");
+    
     return [...privateThemes, ...premiumThemes, ...publicThemes].map(
       (theme) => ({
         ...theme,
@@ -68,13 +73,13 @@ export const getThemes = async (
         16384: theme[16384],
         32768: theme[32768],
         65536: theme[65536],
-        owned: theme.users.some((user) => user.uuid === userUuid) || theme.creator_id == address,
+        owned: theme.userThemes.some((userTheme) => userTheme.user.uuid === userUuid) || theme.creator_id == address,
       })
     );
   } else {
     // For other visibility types, query by visibility as before
     const themes = await themeRepository.find({
-      relations: ["users"],
+      relations: ["userThemes", "userThemes.user"],
       where: { visibility },
     });
     console.log(themes.map((theme) => theme.price))
@@ -96,7 +101,7 @@ export const getThemes = async (
       16384: theme[16384],
       32768: theme[32768],
       65536: theme[65536],
-      owned: theme.users.some((user) => user.uuid === userUuid),
+      owned: theme.userThemes.some((userTheme) => userTheme.user.uuid === userUuid),
     }));
   }
 };
@@ -118,10 +123,12 @@ export const buyTheme = async (userUuid: string, themeId: string) => {
     AppDataSource.getRepository(ThemeEntity);
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
+  const userThemeRepository: Repository<UserThemeEntity> =
+    AppDataSource.getRepository(UserThemeEntity);
 
   const theme = await themeRepository.findOne({
     where: { uuid: themeId },
-    relations: ["users"],
+    relations: ["userThemes", "userThemes.user"],
   });
 
   if (!theme) {
@@ -136,24 +143,35 @@ export const buyTheme = async (userUuid: string, themeId: string) => {
     throw new NotFoundError(MESSAGE.ERROR.USER_DOES_NOT_EXIST);
   }
 
-  if (!theme.users.some((user) => user.uuid === userUuid)) {
-    theme.users.push(user);
-  }
+  // Check if user already owns this theme
+  const existingUserTheme = await userThemeRepository.findOne({
+    where: { userId: userUuid, themeId: themeId },
+  });
 
-  await themeRepository.save(theme);
+  if (!existingUserTheme) {
+    // Create new user theme relationship
+    const newUserTheme = new UserThemeEntity();
+    newUserTheme.userId = userUuid;
+    newUserTheme.themeId = themeId;
+    newUserTheme.maxTile = 0;
+    newUserTheme.maxScore = 0;
+    
+    await userThemeRepository.save(newUserTheme);
+  }
 
   return theme;
 };
 
 export const createTheme = async (
   userUuid: string,
-  theme: Omit<ThemeEntity, "uuid" | "users" | "createdAt" | "updatedAt">
+  theme: Omit<ThemeEntity, "uuid" | "userThemes" | "createdAt" | "updatedAt">
 ) => {
   const themeRepository: Repository<ThemeEntity> =
     AppDataSource.getRepository(ThemeEntity);
-
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
+  const userThemeRepository: Repository<UserThemeEntity> =
+    AppDataSource.getRepository(UserThemeEntity);
 
   const user = await userRepository.findOne({
     where: { uuid: userUuid },
@@ -172,7 +190,6 @@ export const createTheme = async (
   newTheme.position = theme.position;
   newTheme.visibility = theme.visibility;
   newTheme.price = theme.price;
-  newTheme.users = [user];
   newTheme[2] = theme[2];
   newTheme[4] = theme[4];
   newTheme[8] = theme[8];
@@ -191,7 +208,16 @@ export const createTheme = async (
   newTheme[65536] = theme[65536];
   newTheme.creator_id = user.address;
 
-  await themeRepository.save(newTheme);
+  const savedTheme = await themeRepository.save(newTheme);
 
-  return newTheme;
+  // Create user theme relationship
+  const newUserTheme = new UserThemeEntity();
+  newUserTheme.userId = userUuid;
+  newUserTheme.themeId = savedTheme.uuid;
+  newUserTheme.maxTile = 0;
+  newUserTheme.maxScore = 0;
+  
+  await userThemeRepository.save(newUserTheme);
+
+  return savedTheme;
 };

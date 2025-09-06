@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToMany, JoinTable, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { CoreEntity } from "./core.entity";
-import { UserEntity } from "./user.entity";
+import { UserThemeEntity } from "./userTheme.entity";
 
 @Entity("theme")
 export class ThemeEntity extends CoreEntity {
@@ -92,17 +92,6 @@ export class ThemeEntity extends CoreEntity {
   @Column({ nullable: true })
   creator_id: string;
 
-  @ManyToMany(() => UserEntity, (user) => user.themes)
-  @JoinTable({
-    name: "user_themes", // name of the join table
-    joinColumn: {
-      name: "theme_id",
-      referencedColumnName: "uuid",
-    },
-    inverseJoinColumn: {
-      name: "user_id",
-      referencedColumnName: "uuid",
-    },
-  })
-  users: UserEntity[];
+  @OneToMany(() => UserThemeEntity, (userTheme) => userTheme.theme)
+  userThemes: UserThemeEntity[];
 }

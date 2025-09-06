@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToMany } from "typeorm";
+import { Entity, Column, OneToMany } from "typeorm";
 import { CoreEntity } from "./core.entity";
-import { ThemeEntity } from "./theme.entity";
+import { UserThemeEntity } from "./userTheme.entity";
 
 @Entity("user")
 export class UserEntity extends CoreEntity {
@@ -22,8 +22,8 @@ export class UserEntity extends CoreEntity {
   @Column({ type: "int", nullable: false, default: 4 })
   cols: number;
 
-  @ManyToMany(() => ThemeEntity, theme => theme.users)
-  themes: ThemeEntity[];
+  @OneToMany(() => UserThemeEntity, (userTheme) => userTheme.user)
+  userThemes: UserThemeEntity[];
 
   @Column({ type: "int", nullable: false, default: 0 })
   hammer: number;

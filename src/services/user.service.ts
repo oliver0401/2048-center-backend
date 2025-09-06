@@ -27,7 +27,7 @@ export const getOneUser = async (
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const findUser: UserEntity = await userRepository.findOne({
-    relations: ["themes"],
+    relations: ["userThemes"],
     where: { ...data },
   });
 
@@ -47,6 +47,7 @@ export const updateUser = async (
     AppDataSource.getRepository(UserEntity);
 
   const findUser: UserEntity = await userRepository.findOne({
+    relations: ["userThemes"],
     where: { uuid },
   });
 
@@ -67,6 +68,7 @@ export const updateItem = async (
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const findUser: UserEntity = await userRepository.findOne({
+    relations: ["userThemes"],
     where: { uuid },
   });
 

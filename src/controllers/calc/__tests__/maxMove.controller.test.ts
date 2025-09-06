@@ -32,10 +32,11 @@ describe("maxMoveController", () => {
         deletedAt: null,
         rows: 0,
         cols: 0,
-        themes: [],
+        userThemes: [],
         hammer: 0,
         upgrade: 0,
         powerup: 0,
+        countThemes: 0,
       },
     };
 

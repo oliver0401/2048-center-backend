@@ -36,7 +36,8 @@ describe("updateUserController", () => {
         maxTile: 0,
         rows: 0,
         cols: 0,
-        themes: [],
+        userThemes: [],
+        countThemes: 0,
       },
       body: { name: "Updated Name", email: "updated@example.com" },
     };
