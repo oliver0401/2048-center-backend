@@ -9,5 +9,6 @@ themeRouter.get("/public/:visibility", themeController.getPublicThemeController)
 themeRouter.post("/created", checkAuth, themeController.getCreatedThemesController);
 themeRouter.post("/", checkAuth, themeController.createThemeController);
 themeRouter.post("/buy", checkAuth, themeController.buyThemeController);
-
+themeRouter.post("/share", checkAuth, themeController.shareThemeController);
+themeRouter.post("/import", checkAuth, themeController.importThemeController);
 export default themeRouter;

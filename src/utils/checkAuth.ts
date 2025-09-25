@@ -28,8 +28,8 @@ export const checkAuth = async (
     if (user.deletedAt) {
       throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);
     }
-    
-    req.user = { ...user, countThemes: user.userThemes.length };
+
+    req.user = { ...user, countThemes: user.userThemes ? user.userThemes.length : 0 };
     next();
   } catch (err) {
     Logger.error(err);

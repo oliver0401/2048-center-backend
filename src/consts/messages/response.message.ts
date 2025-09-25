@@ -11,3 +11,7 @@ export const NO_TRANSFER_EVENT: string = "No valid transfer event found";
 export const WRONG_TRANSACTION_DETAIL: string = "Transaction detail is incorrect";
 export const UNSUPPORTED_NETWORK: string = "Unsupported network";
 export const UNSUPPORTED_TOKEN : string = "Unsupported token";
+export const RECORD_SAVED: string = "Play record saved successfully";
+export const RECORDS_RETRIEVED: string = "Play records retrieved successfully";
+export const RECORD_RETRIEVED: string = "Play record retrieved successfully";
+export const RECORD_DELETED: string = "Play record deleted successfully";

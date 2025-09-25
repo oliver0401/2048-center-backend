@@ -12,3 +12,6 @@ export const TOKEN_DOES_NOT_EXIST: string = "Token does not exist";
 export const TODO_DOES_NOT_EXIST: string = "Todo does not exist";
 export const USER_DOES_NOT_EXIST: string = "User doesn't exist";
 export const THEME_DOES_NOT_EXIST: string = "Theme doesn't exist";
+export const NOT_OWNER: string = "You are not the owner of this theme";
+export const RECORD_NOT_FOUND: string = "Play record not found";
+export const MISSING_REQUIRED_FIELDS: string = "Missing required fields";

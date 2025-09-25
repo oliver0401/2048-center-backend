@@ -4,6 +4,8 @@ import { AppDataSource } from "../setup";
 import { Repository } from "typeorm";
 import { MESSAGE } from "consts";
 import { ThemeVisibility } from "../types";
+import jwt from "jsonwebtoken";
+import { userService } from "services";
 
 export const getPublicThemes = async (
   visibility: Exclude<ThemeVisibility, "all">
@@ -220,4 +222,64 @@ export const createTheme = async (
   await userThemeRepository.save(newUserTheme);
 
   return savedTheme;
+};
+
+export const shareTheme = async (themeId: string, uuid: string) => {
+  try {
+    const object = {themeId, uuid}
+    const shareLinkId = jwt.sign(object, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+    return shareLinkId;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const checkOwnership = async (themeId: string, uuid: string) => {
+  const themeRepository: Repository<ThemeEntity> =
+    AppDataSource.getRepository(ThemeEntity);
+  const theme = await themeRepository.findOne({ where: { uuid: themeId } });
+  console.log("theme", theme);
+  const user = await userService.getOneUser({ uuid });
+  console.log("user", user);
+  if (theme.creator_id == user.address) {
+    return true;
+  }
+  const ownership = user.userThemes.find((userTheme) => userTheme.themeId == themeId);
+  if(ownership) {
+    return true;
+  }
+  return false;
+};
+
+export const importTheme = async (themeId: string, uuid: string) => {
+  const themeRepository: Repository<ThemeEntity> = AppDataSource.getRepository(ThemeEntity);
+  const userThemeRepository: Repository<UserThemeEntity> = AppDataSource.getRepository(UserThemeEntity);
+  const user = await userService.getOneUser({ uuid });
+
+  // Find the theme to import
+  const theme = await themeRepository.findOne({ where: { uuid: themeId } });
+  if (!theme) {
+    throw new Error("Theme not found");
+  }
+
+  // Check if user already has this theme
+  const existingUserTheme = await userThemeRepository.findOne({
+    where: { userId: uuid, themeId: themeId }
+  });
+
+  if (existingUserTheme) {
+    // Already imported
+    return theme;
+  }
+
+  // Create user-theme relation with themeOwnership = false
+  const newUserTheme = new UserThemeEntity();
+  newUserTheme.userId = uuid;
+  newUserTheme.themeId = themeId;
+  newUserTheme.maxTile = 0;
+  newUserTheme.maxScore = 0;
+
+  await userThemeRepository.save(newUserTheme);
+
+  return theme;
 };
