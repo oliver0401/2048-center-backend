@@ -1,10 +1,35 @@
-import { MESSAGE, URL, CONTRACT } from "consts";
+import { MESSAGE, URL, ADDRESSES } from "consts";
 import { Request, Response } from "express";
 import { httpStatus } from "types";
 import { rewardService } from "../../services/reward.service";
 import { Web3 } from "web3";
 import { Env } from "../../env";
 import { createGasPriceStrategy } from "../../utils";
+
+// Minimal ERC20 ABI for USDC/USDT transfers
+const ERC20_ABI = [
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    }
+];
 
 export const bettingReward = async (
     req: Request,
@@ -19,6 +44,35 @@ export const bettingReward = async (
 
     try {
         const { address, amount, network, token, rewardAmount } = req.body;
+        
+        // Validate network and token
+        if (!network || !token) {
+            res.status(httpStatus.BAD_REQUEST).json({ 
+                message: "Network and token are required" 
+            });
+            return;
+        }
+
+        const tokenLower = token.toLowerCase();
+        
+        // Check if network is supported
+        if (!ADDRESSES.TOKEN_CONTRACTS[network]) {
+            res.status(httpStatus.BAD_REQUEST).json({ 
+                message: `Unsupported network: ${network}. Supported networks: ethereum, binance, fuse, arbitrum, polygon, avalanche` 
+            });
+            return;
+        }
+
+        // Check if token is supported on this network
+        if (!ADDRESSES.TOKEN_CONTRACTS[network][tokenLower]) {
+            res.status(httpStatus.BAD_REQUEST).json({ 
+                message: `Unsupported token: ${token} on network: ${network}` 
+            });
+            return;
+        }
+
+        // Get token contract address
+        const tokenContractAddress = ADDRESSES.TOKEN_CONTRACTS[network][tokenLower];
         
         const web3 = new Web3(
             new Web3.providers.HttpProvider(URL.PROVIDER_URL[network])
@@ -42,24 +96,26 @@ export const bettingReward = async (
         // Get optimal gas price
         const gasPrice = await gasPriceStrategy.getOptimalGasPrice(web3, nonce);
 
-        const rewardContract = new web3.eth.Contract(
-            CONTRACT.REWARD_CONTRACT_INFO.abi,
-            CONTRACT.REWARD_CONTRACT_INFO.address,
+        // Create token contract instance (USDC/USDT are ERC20 tokens)
+        const tokenContract = new web3.eth.Contract(
+            ERC20_ABI as any,
+            tokenContractAddress,
             { from: signer.address }
         );
 
-        // Convert amount to wei
-        const rewardAmountWei = web3.utils.toWei(rewardAmount.toString(), 'ether');
+        // USDC and USDT typically use 6 decimals, not 18
+        const decimals = 18;
+        const rewardAmountInTokenUnits = Math.floor(rewardAmount * Math.pow(10, decimals)).toString();
 
-        // Prepare transaction
-        const rewardData = rewardContract.methods.distributeReward(address, rewardAmountWei).encodeABI();
+        // Prepare transaction - use ERC20 transfer method
+        const transferData = tokenContract.methods.transfer(address, rewardAmountInTokenUnits).encodeABI();
         const transaction = {
             from: signer.address,
-            to: CONTRACT.REWARD_CONTRACT_INFO.address,
-            gas: "300000",
+            to: tokenContractAddress,
+            gas: "100000",
             gasPrice: gasPrice,
             nonce: nonce,
-            data: rewardData
+            data: transferData
         };
 
         // Execute transaction
@@ -83,7 +139,9 @@ export const bettingReward = async (
         res.status(httpStatus.OK).json({ 
             message: MESSAGE.RESPONSE.REWARDED_SUCCESS,
             txHash,
-            amount: rewardAmount
+            amount: rewardAmount,
+            token,
+            network
         });
     } catch (error) {
         console.error("Reward transaction failed:", error);
