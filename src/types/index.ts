@@ -10,6 +10,8 @@ export type EnvType = {
   stripeSecretKey: string;
   signerKey: string;
   fuseSignerKey: string;
+  runwareApiKey: string;
+  openaiApiKey: string;
 };
 
 
@@ -40,4 +42,15 @@ export enum ThemeVisibility {
   PRIVATE = "private",
   PREMIUM = "premium",
   ALL = "all",
+}
+
+export enum Network {
+  ETH = "ethereum",
+  BSC = "binance",
+  FUSE = "fuse"
+}
+
+export enum Token {
+  USDT = "USDT",
+  USDC = "USDC"
 }

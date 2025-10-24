@@ -16,6 +16,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.817.0",
     "@clerk/backend": "^1.25.2",
+    "@runware/sdk-js": "^1.1.47",
     "@types/multer": "^1.4.12",
     "@types/uuid": "^10.0.0",
     "axios": "^1.8.1",
@@ -27,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",
     "mysql": "^2.18.1",
+    "openai": "^6.6.0",
     "stripe": "^17.6.0",
     "svix": "^1.61.3",
     "typeorm": "0.3.20",

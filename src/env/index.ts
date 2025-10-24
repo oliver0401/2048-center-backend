@@ -15,4 +15,6 @@ export const Env: EnvType = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   signerKey: process.env.SIGNER_KEY,
   fuseSignerKey: process.env.FUSE_SIGNER_KEY,
+  runwareApiKey: process.env.RUNWARE_API_KEY,
+  openaiApiKey: process.env.OPENAI_API_KEY,
 };
