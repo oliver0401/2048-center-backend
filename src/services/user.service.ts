@@ -24,11 +24,12 @@ export const createUser = async (
 export const getOneUser = async (
   data: Partial<UserEntity>
 ): Promise<UserEntity> | null => {
+  const {os, ...params} = data;
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const findUser: UserEntity = await userRepository.findOne({
     relations: ["userThemes"],
-    where: { ...data },
+    where: { ...params },
   });
 
   if (!findUser) {

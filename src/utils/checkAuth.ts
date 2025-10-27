@@ -12,6 +12,7 @@ export const checkAuth = async (
 ): Promise<void> => {
   try {
     const address = req.header("Authorization");
+    console.log("address", address);
     if (!address) {
       throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
     }
