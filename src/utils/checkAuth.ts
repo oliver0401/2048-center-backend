@@ -3,6 +3,7 @@ import { userService } from "../services";
 import { Logger } from "./logger";
 import { UnauthorizedError } from "../errors";
 import { MESSAGE } from "../consts";
+import { getOSFromRequest } from "./detectOS";
 
 export const checkAuth = async (
   req: Request,
@@ -14,8 +15,8 @@ export const checkAuth = async (
     if (!address) {
       throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
     }
-    
-    let user = await userService.getOneUser({ address });
+    const os = getOSFromRequest(req);
+    let user = await userService.getOneUser({ address, os });
     
     // If user doesn't exist, create a new one
     if (!user) {

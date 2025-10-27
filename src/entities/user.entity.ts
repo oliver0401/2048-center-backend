@@ -33,4 +33,7 @@ export class UserEntity extends CoreEntity {
 
   @Column({ type: "int", nullable: false, default: 0 })
   powerup: number;
+
+  @Column({ type: "varchar", nullable: true})
+  os: string;
 }

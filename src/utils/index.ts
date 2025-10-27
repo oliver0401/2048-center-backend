@@ -6,3 +6,4 @@ export * from "./generateToken";
 export * from "./logger";
 export * from "./gasPriceStrategy";
 export * from "./checkAuth";
+export * from "./detectOS";
