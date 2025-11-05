@@ -34,6 +34,30 @@ export class UserEntity extends CoreEntity {
   @Column({ type: "int", nullable: false, default: 0 })
   powerup: number;
 
-  @Column({ type: "varchar", nullable: true})
+  @Column({ type: "varchar", nullable: false, default: 0})
   os: string;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  ethusdt: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  ethusdc: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  bnbusdt: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  bnbusdc: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  polusdt: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  polusdc: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  fuseusdt: number;
+
+  @Column({ type: "float", nullable: false, default: 0})
+  fuseusdc: number;
 }
