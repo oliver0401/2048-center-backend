@@ -1,6 +1,13 @@
 import { DataSource } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { UserEntity, ThemeEntity, UserThemeEntity, RecordEntity, RewardEntity } from "../entities";
+import {
+  UserEntity,
+  ThemeEntity,
+  UserThemeEntity,
+  RecordEntity,
+  RewardEntity,
+  MonitorEntity
+} from "../entities";
 import "dotenv/config";
 import { Env } from "../env";
 
@@ -13,7 +20,14 @@ export const AppDataSource = new DataSource({
   port: Env.dbPort,
   logging: false,
   synchronize: true, // Temporarily disabled to avoid migration conflicts
-  entities: [UserEntity, ThemeEntity, UserThemeEntity, RecordEntity, RewardEntity],
+  entities: [
+    UserEntity,
+    ThemeEntity,
+    UserThemeEntity,
+    RecordEntity,
+    RewardEntity,
+    MonitorEntity
+  ],
   entitySkipConstructor: true,
   namingStrategy: new SnakeNamingStrategy(),
 });
