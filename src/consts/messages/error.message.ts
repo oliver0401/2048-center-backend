@@ -16,3 +16,4 @@ export const NOT_OWNER: string = "You are not the owner of this theme";
 export const RECORD_NOT_FOUND: string = "Play record not found";
 export const MISSING_REQUIRED_FIELDS: string = "Missing required fields";
 export const BALANCE_NOT_FOUND: string = "Balance not found";
+export const SUBSCRIBE_ALREADY_EXISTS: string = "Subscribe already exists";

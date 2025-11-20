@@ -6,3 +6,4 @@ export * as rewardService from "./reward.service";
 export * as openaiService from "./openai.service";
 export * as runwareService from "./runware.service";
 export * as monitorService from "./monitor.service";
+export * as subscribeService from "./subscribe.service";

@@ -6,7 +6,8 @@ import {
   UserThemeEntity,
   RecordEntity,
   RewardEntity,
-  MonitorEntity
+  MonitorEntity,
+  SubscribeEntity,
 } from "../entities";
 import "dotenv/config";
 import { Env } from "../env";
@@ -26,7 +27,8 @@ export const AppDataSource = new DataSource({
     UserThemeEntity,
     RecordEntity,
     RewardEntity,
-    MonitorEntity
+    MonitorEntity,
+    SubscribeEntity,
   ],
   entitySkipConstructor: true,
   namingStrategy: new SnakeNamingStrategy(),

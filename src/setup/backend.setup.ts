@@ -11,8 +11,9 @@ import { errorHandlerMiddleware, routeMiddleware } from "../middlewares";
 export const backendSetup = () => {
   const app: Express = express();
 
+  app.options('*', cors());
   app.use(cors());
-  app.use(bodyParser());
+  app.use(bodyParser({ limit: '100mb' }));
 
   app.use(routeMiddleware);
   

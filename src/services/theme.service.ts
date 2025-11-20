@@ -239,11 +239,25 @@ export const checkOwnership = async (themeId: string, uuid: string) => {
     AppDataSource.getRepository(ThemeEntity);
   const theme = await themeRepository.findOne({ where: { uuid: themeId } });
   console.log("theme", theme);
+  
+  if (!theme) {
+    throw new NotFoundError(MESSAGE.ERROR.THEME_DOES_NOT_EXIST);
+  }
+  
+  // Users have ownership of all public themes
+  if (theme.visibility === ThemeVisibility.PUBLIC) {
+    return true;
+  }
+  
   const user = await userService.getOneUser({ uuid });
   console.log("user", user);
+  
+  // Users have ownership of themes they create
   if (theme.creator_id == user.address) {
     return true;
   }
+  
+  // Check if user has purchased/imported the theme
   const ownership = user.userThemes.find((userTheme) => userTheme.themeId == themeId);
   if(ownership) {
     return true;

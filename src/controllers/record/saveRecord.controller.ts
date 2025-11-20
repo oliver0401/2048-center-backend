@@ -1,5 +1,5 @@
 import { recordService } from "../../services/record.service";
-import { errorHandlerWrapper } from "../../utils";
+import { errorHandlerWrapper, Logger } from "../../utils";
 import { Request, Response } from "express";
 import { httpStatus } from "../../types";
 import { MESSAGE } from "consts";
@@ -65,7 +65,19 @@ const saveRecordHandler = async (
     try {
       // Validate that playHistory is valid JSON
       JSON.parse(playHistory);
+      
+      // Log play history upload size
+      const playHistorySizeBytes = Buffer.byteLength(playHistory, 'utf8');
+      const playHistorySizeKB = (playHistorySizeBytes / 1024).toFixed(2);
+      const playHistorySizeMB = (playHistorySizeBytes / (1024 * 1024)).toFixed(2);
+      
+      Logger.info('📤 Uploading Play History to S3');
+      Logger.info(`   User: ${uuid}`);
+      Logger.info(`   Size: ${playHistorySizeBytes} bytes (${playHistorySizeKB} KB / ${playHistorySizeMB} MB)`);
+      
       playHistoryUrl = await uploadPlayHistoryToS3(playHistory, uuid);
+      
+      Logger.info(`   ✅ Successfully uploaded play history -> ${playHistoryUrl}`);
     } catch (error) {
       throw new BadRequestError("Play history must be valid JSON format");
     }

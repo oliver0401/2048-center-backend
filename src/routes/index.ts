@@ -8,6 +8,7 @@ import openaiRoutes from "./openaiRoutes";
 import runwareRoutes from "./runwareRoutes";
 import balanceRoutes from "./balanceRoutes";
 import monitorRoutes from "./monitorRoutes";
+import subscribeRoutes from "./subscribeRoutes";
 
 export const appRouter = Router();
 
@@ -20,3 +21,4 @@ appRouter.use("/openai", openaiRoutes);
 appRouter.use("/runware", runwareRoutes);
 appRouter.use("/balance", balanceRoutes);
 appRouter.use("/monitor", monitorRoutes);
+appRouter.use("/subscribe", subscribeRoutes);

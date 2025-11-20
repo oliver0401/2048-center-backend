@@ -1,5 +1,5 @@
 import { themeService } from "../../services";
-import { errorHandlerWrapper } from "../../utils";
+import { errorHandlerWrapper, Logger } from "../../utils";
 import { Request, Response } from "express";
 import { httpStatus } from "../../types";
 import multer from "multer";
@@ -21,7 +21,13 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { 
+    fileSize: 50 * 1024 * 1024, // 50MB per file
+    fieldSize: 50 * 1024 * 1024, // 50MB for field values
+    fields: 100, // Max number of non-file fields
+    files: 100, // Max number of files
+    fieldNameSize: 100, // Max field name size
+  },
   fileFilter: (req, file, cb) => {
     // Accept only image files
     if (file.mimetype.startsWith('image/')) {

@@ -7,3 +7,4 @@ export * as balanceController from "./balance";
 export * as openaiController from "./openai";
 export * as runwareController from "./runware";
 export * as monitorController from "./monitor";
+export * as subscribeController from "./subscribe";

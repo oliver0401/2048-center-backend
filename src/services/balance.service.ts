@@ -1,17 +1,16 @@
-import { BalanceEntity } from "entities";
 import { AppDataSource } from "../setup";
 import { Repository } from "typeorm";
 import { NotFoundError } from "errors";
 import { MESSAGE } from "../consts";
 import { Network, Token } from "../types";
+import { UserEntity } from "../entities"; // Use UserEntity instead
 
 export const getBalance = async (address: string) => {
-    const balanceRepository: Repository<BalanceEntity> =
-        AppDataSource.getRepository(BalanceEntity);
-    const balance = await balanceRepository.findOne({
+    const userRepository: Repository<UserEntity> = AppDataSource.getRepository(UserEntity);
+    const user = await userRepository.findOne({
         where: { address }
     });
-    return balance;
+    return user; // Return user which has balance fields
 };
 
 export const updateBalance = async (
@@ -20,29 +19,26 @@ export const updateBalance = async (
     network: string,
     token: string
 ) => {
-    const balanceRepository: Repository<BalanceEntity> =
-        AppDataSource.getRepository(BalanceEntity);
-    const balance = await balanceRepository.findOne({
+    const userRepository: Repository<UserEntity> = AppDataSource.getRepository(UserEntity);
+    const user = await userRepository.findOne({
         where: { address }
     });
-    if (!balance) {
+    if (!user) {
         throw new NotFoundError(MESSAGE.ERROR.BALANCE_NOT_FOUND);
     }
+    
+    // Update based on network and token - map to UserEntity fields
     if (network === Network.ETH) {
-        token === Token.USDT
-            ? balance.etbalance += amount
-            : balance.ecbalance += amount;
-    }
-    if (network === Network.BSC) {
-        token === Token.USDT
-            ? balance.btbalance += amount
-            : balance.bcbalance += amount;
-    }
-    if (network === Network.FUSE) {
-        token === Token.USDT
-            ? balance.ftbalance += amount
-            : balance.fcbalance += amount;
-    }
-    await balanceRepository.save(balance);
-    return balance;
+        if (token === Token.USDT) user.ethusdt += amount;
+        else user.ethusdc += amount;
+    } else if (network === Network.BSC) {
+        if (token === Token.USDT) user.bnbusdt += amount;
+        else user.bnbusdc += amount;
+    } else if (network === Network.FUSE) {
+        if (token === Token.USDT) user.fuseusdt += amount;
+        else user.fuseusdc += amount;
+    } // Add other networks if needed
+    
+    await userRepository.save(user);
+    return user;
 };
