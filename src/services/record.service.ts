@@ -43,7 +43,8 @@ export class RecordService {
 
   async searchRecords(options: {
     userId?: string;
-    date?: string;
+    startDate?: string;
+    endDate?: string;
     sortBy?: 'score' | 'moves' | 'date';
     sortOrder?: 'asc' | 'desc';
     limit?: number;
@@ -51,7 +52,8 @@ export class RecordService {
   }): Promise<{ records: RecordEntity[]; total: number }> {
     const {
       userId,
-      date,
+      startDate,
+      endDate,
       sortBy = 'date',
       sortOrder = 'desc',
       limit = 10,
@@ -66,16 +68,32 @@ export class RecordService {
       queryBuilder.andWhere('user.uuid = :userId', { userId });
     }
 
-    // Filter by date if provided
-    if (date) {
-      const startDate = new Date(date);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(date);
-      endDate.setHours(23, 59, 59, 999);
+    // Filter by date range if provided
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
       
       queryBuilder.andWhere('record.date BETWEEN :startDate AND :endDate', {
-        startDate,
-        endDate
+        startDate: start,
+        endDate: end
+      });
+    } else if (startDate) {
+      // Only start date provided
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      
+      queryBuilder.andWhere('record.date >= :startDate', {
+        startDate: start
+      });
+    } else if (endDate) {
+      // Only end date provided
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      
+      queryBuilder.andWhere('record.date <= :endDate', {
+        endDate: end
       });
     }
 
@@ -107,15 +125,29 @@ export class RecordService {
       totalQueryBuilder.andWhere('user.uuid = :userId', { userId });
     }
 
-    if (date) {
-      const startDate = new Date(date);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(date);
-      endDate.setHours(23, 59, 59, 999);
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
       
       totalQueryBuilder.andWhere('record.date BETWEEN :startDate AND :endDate', {
-        startDate,
-        endDate
+        startDate: start,
+        endDate: end
+      });
+    } else if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      
+      totalQueryBuilder.andWhere('record.date >= :startDate', {
+        startDate: start
+      });
+    } else if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      
+      totalQueryBuilder.andWhere('record.date <= :endDate', {
+        endDate: end
       });
     }
 

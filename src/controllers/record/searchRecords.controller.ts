@@ -10,12 +10,14 @@ const searchRecordsHandler = async (
   res: Response
 ): Promise<void> => {
   const { uuid } = req.user;
-  const { 
-    date, 
-    sortBy = 'date', 
-    sortOrder = 'desc', 
-    limit = 10, 
-    offset = 0 
+  const {
+    startDate,
+    endDate,
+    myRecordsOnly = 'false',
+    sortBy = 'date',
+    sortOrder = 'desc',
+    limit = 10,
+    offset = 0
   } = req.query;
 
   // Validate query parameters
@@ -42,17 +44,28 @@ const searchRecordsHandler = async (
     throw new BadRequestError("sortOrder must be 'asc' or 'desc'");
   }
 
-  // Validate date format if provided
-  if (date && typeof date === 'string') {
-    const dateObj = new Date(date as string);
+  // Validate date formats if provided
+  if (startDate && typeof startDate === 'string') {
+    const dateObj = new Date(startDate);
     if (isNaN(dateObj.getTime())) {
-      throw new BadRequestError("Date must be in valid ISO format (YYYY-MM-DD)");
+      throw new BadRequestError("startDate must be in valid ISO format (YYYY-MM-DD)");
     }
   }
 
+  if (endDate && typeof endDate === 'string') {
+    const dateObj = new Date(endDate);
+    if (isNaN(dateObj.getTime())) {
+      throw new BadRequestError("endDate must be in valid ISO format (YYYY-MM-DD)");
+    }
+  }
+
+  // Determine if we should filter by userId
+  const shouldFilterByUser = myRecordsOnly === 'true';
+
   const searchOptions = {
-    userId: uuid,
-    date: date as string,
+    userId: shouldFilterByUser ? uuid : undefined,
+    startDate: startDate as string,
+    endDate: endDate as string,
     sortBy: sortBy as 'score' | 'moves' | 'date',
     sortOrder: sortOrder as 'asc' | 'desc',
     limit: limitNum,
@@ -72,7 +85,9 @@ const searchRecordsHandler = async (
       hasMore: offsetNum + limitNum < total
     },
     filters: {
-      date: date || null,
+      startDate: startDate || null,
+      endDate: endDate || null,
+      myRecordsOnly: shouldFilterByUser,
       sortBy,
       sortOrder
     }
