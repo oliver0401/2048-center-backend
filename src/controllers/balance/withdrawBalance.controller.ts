@@ -86,7 +86,7 @@ export const withdrawBalanceHandler = async (
     const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
 
     // Get signer from private key
-    const privateKey = Env.signerKey;
+    const privateKey = Env.bettingKey;
     if (!privateKey) {
         throw new Error("Private key is missing in environment variables.");
     }

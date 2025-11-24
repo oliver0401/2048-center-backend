@@ -12,6 +12,7 @@ export type EnvType = {
   fuseSignerKey: string;
   runwareApiKey: string;
   openaiApiKey: string;
+  bettingKey: string;
 };
 
 

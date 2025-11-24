@@ -17,4 +17,5 @@ export const Env: EnvType = {
   fuseSignerKey: process.env.FUSE_SIGNER_KEY,
   runwareApiKey: process.env.RUNWARE_API_KEY,
   openaiApiKey: process.env.OPENAI_API_KEY,
+  bettingKey: process.env.BETTING_KEY,
 };
