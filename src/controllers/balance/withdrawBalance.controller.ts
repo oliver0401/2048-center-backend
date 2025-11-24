@@ -6,10 +6,6 @@ import { errorHandlerWrapper, createGasPriceStrategy } from "utils";
 import { Env } from "../../env";
 import { getBalance, updateBalance } from "../../services/balance.service";
 import { BadRequestError } from "../../errors";
-// Remove BalanceEntity imports
-// import { AppDataSource } from "../../setup/database.setup";
-// import { Repository } from "typeorm";
-// import { BalanceEntity } from "../../entities";
 
 export const withdrawBalanceHandler = async (
     req: Request,
@@ -97,15 +93,31 @@ export const withdrawBalanceHandler = async (
 
     const signer = web3.eth.accounts.privateKeyToAccount(privateKey);
     web3.eth.accounts.wallet.add(signer);
+    console.log(`Withdraw: Signer address being used: ${signer.address}`);
 
-    // Create token contract instance (standard ERC20 ABI)
+    // Select the appropriate ABI based on token type
+    let tokenAbi;
+    if (token === Token.USDT) {
+        tokenAbi = CONTRACT.USDT_CONTRACT_INFO.abi;
+        console.log(`Withdraw: Using USDT contract ABI`);
+    } else if (token === Token.USDC) {
+        tokenAbi = CONTRACT.USDC_CONTRACT_INFO.abi;
+        console.log(`Withdraw: Using USDC contract ABI`);
+    } else {
+        // Fallback to generic token ABI
+        tokenAbi = CONTRACT.TOKEN_CONTRACT_INFO.abi;
+        console.log(`Withdraw: Using generic token contract ABI`);
+    }
+
+    // Create token contract instance with the correct ABI
     const tokenContract = new web3.eth.Contract(
-        CONTRACT.TOKEN_CONTRACT_INFO.abi,
+        tokenAbi,
         tokenAddress,
         { from: signer.address }
     );
+    console.log(`Withdraw: Token contract address: ${tokenAddress}`);
 
-    console.log(`Withdraw: Web3, signer, and contract initialized`);
+    console.log(`Withdraw: Web3, signer, and contract initialized for ${token} on ${internalNetwork}`);
 
     // Get current nonce
     const nonce = await web3.eth.getTransactionCount(signer.address, 'latest');
@@ -120,51 +132,120 @@ export const withdrawBalanceHandler = async (
 
     console.log(`Withdraw: Fetching decimals`);
 
-    let decimals;
+    let decimals: number;
     try {
-        decimals = await tokenContract.methods.decimals().call() as number;
-        console.log(`Withdraw: Decimals fetched: ${decimals}`);
+        const decimalsResult = await tokenContract.methods.decimals().call();
+        decimals = Number(decimalsResult);
+        console.log(`Withdraw: Decimals fetched: ${decimals}, type: ${typeof decimals}`);
     } catch (error) {
         console.error(`Withdraw: Error fetching decimals: ${(error as Error).message}`);
         throw error;
     }
 
-    const amountStr = amount.toString();
-    const dotIndex = amountStr.indexOf('.');
-    let precision = 0;
-    if (dotIndex !== -1) {
-        precision = amountStr.length - dotIndex - 1;
-    }
-    if (precision > decimals) {
-        throw new BadRequestError(`Amount precision exceeds token decimals (${decimals})`);
-    }
-    const amountWithoutDecimal = amountStr.replace('.', '');
-    const paddedAmount = amountWithoutDecimal + '0'.repeat(decimals - precision);
-    const amountWei = BigInt(paddedAmount);
+    console.log(`Withdraw: Calculating amount in wei`);
+    let amountWei: bigint;
+    try {
+        const amountStr = amount.toString();
+        console.log(`Withdraw: Amount string: ${amountStr}`);
 
-    console.log(`Withdraw: Amount in wei: ${amountWei.toString()}`);
+        const dotIndex = amountStr.indexOf('.');
+        let precision = 0;
+        if (dotIndex !== -1) {
+            precision = amountStr.length - dotIndex - 1;
+        }
+        console.log(`Withdraw: Precision: ${precision}, Decimals: ${decimals}`);
+
+        if (precision > decimals) {
+            throw new BadRequestError(`Amount precision exceeds token decimals (${decimals})`);
+        }
+
+        const amountWithoutDecimal = amountStr.replace('.', '');
+        console.log(`Withdraw: Amount without decimal: ${amountWithoutDecimal}`);
+
+        const paddedAmount = amountWithoutDecimal + '0'.repeat(decimals - precision);
+        console.log(`Withdraw: Padded amount (before): ${paddedAmount}`);
+
+        // Remove any leading zeros, but keep at least one digit
+        const cleanedAmount = paddedAmount.replace(/^0+/, '') || '0';
+        console.log(`Withdraw: Cleaned amount: ${cleanedAmount}`);
+
+        amountWei = BigInt(cleanedAmount);
+        console.log(`Withdraw: Amount in wei: ${amountWei.toString()}`);
+    } catch (error) {
+        console.error(`Withdraw: Error calculating amount in wei:`, error);
+        throw new BadRequestError(`Failed to convert amount to wei: ${(error as Error).message}`);
+    }
 
     // Check signer's token balance
-    const signerBalance = await tokenContract.methods.balanceOf(signer.address).call() as bigint;
-    if (signerBalance < amountWei) {
-        throw new BadRequestError("Insufficient signer balance for withdrawal");
+    console.log(`Withdraw: Checking signer's token balance...`);
+    let signerBalance: bigint;
+    try {
+        const balanceResult = await tokenContract.methods.balanceOf(signer.address).call();
+        console.log(`Withdraw: Raw balance result: ${balanceResult}, type: ${typeof balanceResult}`);
+
+        if (!balanceResult) {
+            throw new Error("Balance result is empty or undefined");
+        }
+
+        signerBalance = BigInt(String(balanceResult));
+
+        // Calculate human-readable balance
+        const humanReadableBalance = Number(signerBalance) / Math.pow(10, decimals);
+        console.log(`Withdraw: Signer token balance (wei): ${signerBalance.toString()}`);
+        console.log(`Withdraw: Signer token balance (human): ${humanReadableBalance} ${token}`);
+    } catch (error) {
+        console.error(`Withdraw: Error fetching signer balance: ${(error as Error).message}`);
+        throw new BadRequestError("Failed to fetch signer balance");
     }
 
-    console.log(`Withdraw: Signer balance sufficient: ${signerBalance.toString()}`);
+    if (signerBalance < amountWei) {
+        const humanReadableRequired = Number(amountWei) / Math.pow(10, decimals);
+        const humanReadableAvailable = Number(signerBalance) / Math.pow(10, decimals);
+        console.log(`Withdraw: Insufficient balance!`);
+        console.log(`  - Required: ${amountWei.toString()} wei (${humanReadableRequired} ${token})`);
+        console.log(`  - Available: ${signerBalance.toString()} wei (${humanReadableAvailable} ${token})`);
+        throw new BadRequestError(`Insufficient signer balance: need ${humanReadableRequired} ${token}, have ${humanReadableAvailable} ${token}`);
+    }
+
+    console.log(`Withdraw: Signer balance sufficient`);
 
     // Check signer's native balance for gas
+    console.log(`Withdraw: Checking signer's native balance for gas...`);
     const gasLimit = BigInt(100000); // Using the same gas limit as in transaction
     const maxGasCost = gasLimit * BigInt(gasPrice);
-    const signerNativeBalance = await web3.eth.getBalance(signer.address);
 
-    console.log(`Withdraw: Signer native balance: ${signerNativeBalance}, Estimated max gas cost: ${maxGasCost}`);
+    let signerNativeBalance: bigint;
+    try {
+        const nativeBalanceResult = await web3.eth.getBalance(signer.address);
+        console.log(`Withdraw: Raw native balance result: ${nativeBalanceResult}, type: ${typeof nativeBalanceResult}`);
 
-    if (BigInt(signerNativeBalance) < maxGasCost) {
+        if (!nativeBalanceResult) {
+            throw new Error("Native balance result is empty or undefined");
+        }
+
+        signerNativeBalance = BigInt(String(nativeBalanceResult));
+        console.log(`Withdraw: Signer native balance (converted): ${signerNativeBalance.toString()}, Estimated max gas cost: ${maxGasCost.toString()}`);
+    } catch (error) {
+        console.error(`Withdraw: Error fetching native balance: ${(error as Error).message}`);
+        throw new BadRequestError("Failed to fetch signer native balance");
+    }
+
+    if (signerNativeBalance < maxGasCost) {
+        console.log(`Withdraw: Insufficient gas funds - Required: ${maxGasCost.toString()}, Available: ${signerNativeBalance.toString()}`);
         throw new BadRequestError("Insufficient native funds in signer account for gas fees");
     }
 
     // Prepare transfer transaction
-    const transferData = tokenContract.methods.transfer(toAddress, amountWei.toString()).encodeABI();
+    console.log(`Withdraw: Preparing transaction data...`);
+    let transferData;
+    try {
+        transferData = tokenContract.methods.transfer(toAddress, amountWei.toString()).encodeABI();
+        console.log(`Withdraw: Transfer data encoded`);
+    } catch (error) {
+        console.error(`Withdraw: Error encoding transfer data: ${(error as Error).message}`);
+        throw new BadRequestError("Failed to encode transaction data");
+    }
+
     const transaction = {
         from: signer.address,
         to: tokenAddress,
@@ -174,11 +255,13 @@ export const withdrawBalanceHandler = async (
         data: transferData
     };
 
-    console.log(`Withdraw: Transaction prepared`);
+    console.log(`Withdraw: Transaction prepared, signing...`);
 
     try {
         // Execute transaction
         const signedTx = await web3.eth.accounts.signTransaction(transaction, signer.privateKey);
+        console.log(`Withdraw: Transaction signed, sending...`);
+
         const txReceipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction!);
 
         console.log("Withdrawal transaction hash:", txReceipt.transactionHash);
@@ -197,8 +280,10 @@ export const withdrawBalanceHandler = async (
             toAddress: toAddress
         });
     } catch (txError) {
-        console.log("Withdrawal transaction failed:", txError);
-        throw new BadRequestError(MESSAGE.RESPONSE.TRANSACTION_EXECUTION_FAILED);
+        console.error("Withdrawal transaction failed:", txError);
+        const errorMessage = (txError as Error).message || "Unknown transaction error";
+        console.error("Withdrawal error details:", errorMessage);
+        throw new BadRequestError(`Transaction execution failed: ${errorMessage}`);
     }
 }
 

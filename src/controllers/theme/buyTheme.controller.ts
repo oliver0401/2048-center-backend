@@ -1,5 +1,4 @@
 import { Response } from "express";
-import axios from 'axios';
 import { Request } from "express";
 import Web3 from "web3";
 import dotenv from "dotenv";
@@ -35,27 +34,6 @@ const RPC_URL: Record<string, string> = {
 
 const TRANSFER_EVENT_SIGNATURE = Web3.utils.keccak256("Transfer(address, address, uint256)");
 
-const getUsdtPriceInNativeToken = async (tokenType: string | null): Promise<number> => {
-  try {
-    const coinId = CONSTANTS.COINGECKO_ID[tokenType as any];
-    const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price`, {
-      params: {
-        ids: coinId,
-        vs_currencies: "usd"
-      }
-    });
-
-    const priceInUSD = response.data[coinId]?.usd;
-    if (!priceInUSD) throw new Error("Price fetch failed");
-
-    return 1 / priceInUSD; // Convert 1 USDT to native token amount
-  } catch (error) {
-    console.error("Error fetching price:", error);
-    throw error;
-  }
-
-}
-
 const buyThemeHandler = async (req: Request, res: Response) => {
   try {
     const { uuid } = req.user;
@@ -90,11 +68,9 @@ const buyThemeHandler = async (req: Request, res: Response) => {
 
     if (tokenType === "bnb" || tokenType === "fuse") {
 
-      const convertedAmount = amount * await getUsdtPriceInNativeToken(tokenType);
-
       if (tx.from.toLowerCase() !== fromAddr.toLowerCase() ||
-          tx.to.toLowerCase() !== toAddr.toLowerCase() ||
-          (Math.abs(Number(tx.value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)) {
+        tx.to.toLowerCase() !== toAddr.toLowerCase() ||
+        (Math.abs(Number(tx.value) - Math.floor(amount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)) {
         throw new BadRequestError(MESSAGE.RESPONSE.WRONG_TRANSACTION_DETAIL);
       }
     } else {
@@ -127,11 +103,10 @@ const buyThemeHandler = async (req: Request, res: Response) => {
       const sender: string = decodedLog.from.toLowerCase();
       const recipient: string = decodedLog.to.toLowerCase();
       const value: bigint = decodedLog.value;
-      
-      const convertedAmount = amount * await getUsdtPriceInNativeToken(tokenType);
+
       console.log(Number(value));//10^16
-      console.log(Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)); // 10^17
-      console.log(Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT))); //10^25
+      console.log(Math.floor(amount * CONSTANTS.CONVERT_AMOUNT)); // 10^17
+      console.log(Math.abs(Number(value) - Math.floor(amount * CONSTANTS.CONVERT_AMOUNT))); //10^25
       console.log(CONSTANTS.DEVIATION_AMOUNT);
       console.log(sender);
       console.log(fromAddr.toLowerCase());
@@ -139,7 +114,7 @@ const buyThemeHandler = async (req: Request, res: Response) => {
       console.log(toAddr.toLowerCase());
       if (sender !== fromAddr.toLowerCase() ||
         recipient !== toAddr.toLowerCase() ||
-        (Math.abs(Number(value) - Math.floor(convertedAmount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)
+        (Math.abs(Number(value) - Math.floor(amount * CONSTANTS.CONVERT_AMOUNT)) > CONSTANTS.DEVIATION_AMOUNT)
       ) {
         throw new BadRequestError(MESSAGE.RESPONSE.WRONG_TRANSACTION_DETAIL);
       }
