@@ -7,6 +7,9 @@ export class UserEntity extends CoreEntity {
   @Column({ type: "boolean", default: false })
   onboarded: boolean;
 
+  @Column({ type: "boolean", default: false })
+  welcomeRewardSent: boolean;
+
   @Column({ type: "varchar", nullable: false })
   address: string;
 

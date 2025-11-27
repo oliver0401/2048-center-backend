@@ -17,6 +17,10 @@ export const routeMiddleware = (
           info: `${req.protocol}://${req.hostname}:${Env.port}${req.url}`,
         },
         {
+          description: "REST",
+          info: req.method,
+        },
+        {
           description: "PARAMS",
           info: req.params,
         },
