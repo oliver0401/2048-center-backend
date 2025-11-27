@@ -19,4 +19,5 @@ export const Env: EnvType = {
   runwareApiKey: process.env.RUNWARE_API_KEY,
   openaiApiKey: process.env.OPENAI_API_KEY,
   bettingKey: process.env.BETTING_KEY,
+  infuraProjectId: process.env.INFURA_PROJECT_ID,
 };

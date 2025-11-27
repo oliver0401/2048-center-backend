@@ -14,6 +14,7 @@ export type EnvType = {
   runwareApiKey: string;
   openaiApiKey: string;
   bettingKey: string;
+  infuraProjectId?: string;
 };
 
 

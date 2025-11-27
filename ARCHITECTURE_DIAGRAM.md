@@ -259,8 +259,70 @@ Benefits:
 │  Network RPCs:                                  │
 │  ─────────────                                  │
 │  • Fuse: https://rpc.fuse.io                    │
-│  • Ethereum: https://mainnet.infura.io          │
+│  • Ethereum: Infura (with project ID) or        │
+│    Public fallback: https://eth.llamarpc.com    │
+│  Note: Set INFURA_PROJECT_ID env var for       │
+│  optimal performance on Ethereum network        │
 └─────────────────────────────────────────────────┘
+```
+
+## Welcome Rewards System
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    NEW USER REGISTRATION FLOW                       │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  User Connects Wallet                                               │
+│         │                                                           │
+│         ▼                                                           │
+│  ┌──────────────┐                                                   │
+│  │  checkAuth   │  or  ┌────────────────┐                           │
+│  │    .ts       │      │  register      │                           │
+│  │              │      │  .controller   │                           │
+│  └──────┬───────┘      └────────┬───────┘                           │
+│         │                       │                                   │
+│         └───────┬───────────────┘                                   │
+│                 │                                                   │
+│                 ▼                                                   │
+│         Is New User?                                                │
+│              Yes │                                                  │
+│                 ▼                                                   │
+│    ┌─────────────────────────┐                                      │
+│    │  sendWelcomeRewards()   │                                      │
+│    │  (Non-blocking)         │                                      │
+│    └────────┬────────────────┘                                      │
+│             │                                                       │
+│    ┌────────┴────────┐                                              │
+│    │                 │                                              │
+│    ▼                 ▼                                              │
+│  Ethereum         Fuse                                              │
+│  1000 DWAT      1000 DWAT + FUSE                                    │
+│    │                 │                                              │
+│    └────────┬────────┘                                              │
+│             │                                                       │
+│             ▼                                                       │
+│    Promise.allSettled()                                             │
+│    (Both networks attempted)                                        │
+│             │                                                       │
+│             ▼                                                       │
+│    Log Results (Success/Failure)                                    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+WELCOME PACKAGE
+───────────────
+• 1000 DWAT (Ethereum Network)
+• 1000 DWAT (Fuse Network)  
+• 0.005 FUSE (Gas tokens)
+
+FEATURES
+────────
+✓ Non-blocking: User creation succeeds regardless of rewards
+✓ Parallel: Both networks processed simultaneously
+✓ Resilient: One network can fail, other succeeds
+✓ One-time: Only sent on first registration
+✓ Logged: Full transaction details captured
 ```
 
 ## Testing Strategy
@@ -281,11 +343,13 @@ Benefits:
 │  ─────────────────                              │
 │  • RewardService with mock Web3                 │
 │  • Strategy with mock contracts                 │
+│  • Welcome rewards flow                         │
 │                                                 │
 │  E2E Tests                                      │
 │  ─────────                                      │
 │  • Full reward flow on testnet                  │
 │  • Controller → Blockchain                      │
+│  • New user welcome rewards                     │
 └─────────────────────────────────────────────────┘
 ```
 
