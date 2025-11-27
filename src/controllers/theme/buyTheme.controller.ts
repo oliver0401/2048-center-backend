@@ -55,7 +55,12 @@ const buyThemeHandler = async (req: Request, res: Response) => {
       throw new BadRequestError(MESSAGE.RESPONSE.UNSUPPORTED_TOKEN);
     }
 
-    const web3 = new Web3(new Web3.providers.HttpProvider(RPC_URL[network]));
+    const web3 = new Web3(RPC_URL[network]);
+    
+    // Configure transaction confirmation timeout
+    web3.eth.transactionPollingTimeout = 60000; // 60 seconds (in milliseconds)
+    web3.eth.transactionPollingInterval = 1000; // Check every 1 second
+    web3.eth.transactionConfirmationBlocks = 1; // Wait for 1 confirmation
 
     const [tx, txReceipt] = await Promise.all([
       web3.eth.getTransaction(txHash),

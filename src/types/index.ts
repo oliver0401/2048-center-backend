@@ -8,7 +8,8 @@ export type EnvType = {
   secretKey: string;
   expiresIn: number;
   stripeSecretKey: string;
-  signerKey: string;
+  ethDwatSignerKey: string;
+  fuseDwatSignerKey: string;
   fuseSignerKey: string;
   runwareApiKey: string;
   openaiApiKey: string;

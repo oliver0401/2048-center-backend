@@ -82,8 +82,13 @@ export const withdrawBalanceHandler = async (
 
     console.log(`Withdraw: Provider and contract addresses set`);
 
-    // Initialize Web3
-    const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+    // Initialize Web3 with timeout configuration
+    const web3 = new Web3(providerUrl);
+    
+    // Configure transaction confirmation timeout
+    web3.eth.transactionPollingTimeout = 60000; // 60 seconds (in milliseconds)
+    web3.eth.transactionPollingInterval = 1000; // Check every 1 second
+    web3.eth.transactionConfirmationBlocks = 1; // Wait for 1 confirmation
 
     // Get signer from private key
     const privateKey = Env.bettingKey;
@@ -282,7 +287,19 @@ export const withdrawBalanceHandler = async (
     } catch (txError) {
         console.error("Withdrawal transaction failed:", txError);
         const errorMessage = (txError as Error).message || "Unknown transaction error";
+        const errorName = (txError as Error).name || "";
+        
         console.error("Withdrawal error details:", errorMessage);
+        
+        // Handle timeout errors specifically
+        if (errorName === "TransactionPollingTimeoutError" || errorMessage.includes("not mined within")) {
+            throw new BadRequestError(
+                `Transaction timeout: The transaction was sent but not confirmed within 60 seconds. ` +
+                `This usually means the network is congested or gas price is too low. ` +
+                `The transaction may still complete - please check your wallet or blockchain explorer.`
+            );
+        }
+        
         throw new BadRequestError(`Transaction execution failed: ${errorMessage}`);
     }
 }
