@@ -9,6 +9,8 @@ import runwareRoutes from "./runwareRoutes";
 import balanceRoutes from "./balanceRoutes";
 import monitorRoutes from "./monitorRoutes";
 import subscribeRoutes from "./subscribeRoutes";
+import priceRoutes from "./priceRoutes";
+import approvalRoutes from "./approvalRoutes";
 
 export const appRouter = Router();
 
@@ -22,3 +24,5 @@ appRouter.use("/runware", runwareRoutes);
 appRouter.use("/balance", balanceRoutes);
 appRouter.use("/monitor", monitorRoutes);
 appRouter.use("/subscribe", subscribeRoutes);
+appRouter.use("/price", priceRoutes);
+appRouter.use("/approval", approvalRoutes);

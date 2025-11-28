@@ -8,6 +8,8 @@ import {
   RewardEntity,
   MonitorEntity,
   SubscribeEntity,
+  PriceEntity,
+  TokenApprovalEntity,
 } from "../entities";
 import "dotenv/config";
 import { Env } from "../env";
@@ -29,6 +31,8 @@ export const AppDataSource = new DataSource({
     RewardEntity,
     MonitorEntity,
     SubscribeEntity,
+    PriceEntity,
+    TokenApprovalEntity,
   ],
   entitySkipConstructor: true,
   namingStrategy: new SnakeNamingStrategy(),

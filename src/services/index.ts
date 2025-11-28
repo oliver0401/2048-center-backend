@@ -7,5 +7,7 @@ export * as openaiService from "./openai.service";
 export * as runwareService from "./runware.service";
 export * as monitorService from "./monitor.service";
 export * as subscribeService from "./subscribe.service";
+export * as priceService from "./price.service";
+export * as approvalService from "./approval.service";
 export * from "./network";
 export * from "./reward";

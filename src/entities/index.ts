@@ -5,3 +5,5 @@ export * from "./record.entity";
 export * from "./reward.entity";
 export * from "./monitor.entity";
 export * from "./subscribe.entity";
+export * from "./price.entity";
+export * from "./tokenApproval.entity";

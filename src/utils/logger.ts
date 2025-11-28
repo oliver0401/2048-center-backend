@@ -18,6 +18,18 @@ class CustomLogger {
   groupEnd() {
     console.groupEnd();
   }
+
+  warn(...args: any) {
+    console.warn(...args);
+  }
+
+  debug(...args: any) {
+    console.debug(...args);
+  }
+
+  trace(...args: any) {
+    console.trace(...args);
+  }
 }
 
 export const Logger = new CustomLogger();
