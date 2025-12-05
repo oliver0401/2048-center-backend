@@ -66,4 +66,7 @@ export class UserEntity extends CoreEntity {
 
   @Column({ type: "float", nullable: false, default: 0 })
   fuseusdc: number;
+
+  @Column({ type: "int", nullable: false, default: 0 })
+  ATCredits: number;
 }
