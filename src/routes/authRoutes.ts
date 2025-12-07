@@ -9,4 +9,5 @@ router.get("/", checkAuth, authController.getUserController);
 router.put("/", checkAuth, authController.updateUserController);
 router.put("/:itemId", checkAuth, authController.updateItemController);
 router.post("/record", authController.recordSigninActivityController);
+router.post("/avatar", checkAuth, authController.uploadAvatarController);
 export default router;

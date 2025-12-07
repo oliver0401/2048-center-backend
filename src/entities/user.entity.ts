@@ -69,4 +69,13 @@ export class UserEntity extends CoreEntity {
 
   @Column({ type: "int", nullable: false, default: 0 })
   ATCredits: number;
+
+  @Column({ type: "varchar", nullable: true })
+  avatar: string;
+
+  @Column({ type: "varchar", nullable: true })
+  name: string;
+
+  @Column({ type: "varchar", nullable: true })
+  email: string;
 }
