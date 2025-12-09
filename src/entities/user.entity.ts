@@ -78,4 +78,7 @@ export class UserEntity extends CoreEntity {
 
   @Column({ type: "varchar", nullable: true })
   email: string;
+
+  @Column({ type: "boolean", nullable: false, default: true })
+  appCTA: boolean;
 }
