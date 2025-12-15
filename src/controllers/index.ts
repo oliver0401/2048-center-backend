@@ -10,3 +10,4 @@ export * as monitorController from "./monitor";
 export * as subscribeController from "./subscribe";
 export * as priceController from "./price";
 export * as approvalController from "./approval";
+export * as eventController from "./event";

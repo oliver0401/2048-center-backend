@@ -8,3 +8,4 @@ export * from "./subscribe.entity";
 export * from "./price.entity";
 export * from "./tokenApproval.entity";
 export * from "./signin.entity";
+export * from "./event.entity";

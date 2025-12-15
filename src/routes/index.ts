@@ -11,6 +11,7 @@ import monitorRoutes from "./monitorRoutes";
 import subscribeRoutes from "./subscribeRoutes";
 import priceRoutes from "./priceRoutes";
 import approvalRoutes from "./approvalRoutes";
+import eventRoutes from "./eventRoutes";
 
 export const appRouter = Router();
 
@@ -26,3 +27,4 @@ appRouter.use("/monitor", monitorRoutes);
 appRouter.use("/subscribe", subscribeRoutes);
 appRouter.use("/price", priceRoutes);
 appRouter.use("/approval", approvalRoutes);
+appRouter.use("/events", eventRoutes);

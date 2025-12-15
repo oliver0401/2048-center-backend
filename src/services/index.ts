@@ -9,5 +9,6 @@ export * as monitorService from "./monitor.service";
 export * as subscribeService from "./subscribe.service";
 export * as priceService from "./price.service";
 export * as approvalService from "./approval.service";
+export * as eventService from "./event.service";
 export * from "./network";
 export * from "./reward";
