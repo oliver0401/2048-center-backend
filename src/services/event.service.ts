@@ -119,19 +119,21 @@ export class EventService {
    * Get user's rank in leaderboard
    */
   async getUserRank(event: string, address: string): Promise<{ rank: number; points: number; record: EventEntity | null } | null> {
-    const userRecord = await this.eventRepository.findOne({
-      where: {
-        event,
-        address,
-      },
-    });
+    // Use query builder for case-insensitive address comparison
+    const userRecord = await this.eventRepository
+      .createQueryBuilder("event")
+      .where("event.event = :event", { event })
+      .andWhere("LOWER(event.address) = LOWER(:address)", { address })
+      .getOne();
 
     if (!userRecord) {
       return null;
     }
 
     const leaderboard = await this.getLeaderboard(event, 10000, 0); // Get all records
-    const userRank = leaderboard.records.findIndex((record) => record.address === address);
+    // Use case-insensitive comparison for finding user's rank
+    const normalizedAddress = address.toLowerCase();
+    const userRank = leaderboard.records.findIndex((record) => record.address.toLowerCase() === normalizedAddress);
 
     if (userRank === -1) {
       return null;
