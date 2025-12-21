@@ -12,16 +12,17 @@ export const checkAuth = async (
 ): Promise<void> => {
   try {
     const address = req.header("Authorization");
+    const src = req.query.src as string || "";
     console.log("address", address);
     if (!address) {
       throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
     }
     const os = getOSFromRequest(req);
-    let user = await userService.getOneUser({ address, os });
+    let user = await userService.getOneUser({ address, os, src });
 
     // If user doesn't exist, create a new one
     if (!user) {
-      user = await userService.createUser({ address });
+      user = await userService.createUser({ address, src: src || "" });
       if (!user) {
         throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
       }
