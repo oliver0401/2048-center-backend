@@ -18,15 +18,11 @@ export const checkAuth = async (
       throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
     }
     const os = getOSFromRequest(req);
-    let user = await userService.getOneUser({ address, os, src });
+    let user = await userService.getOneUser({ address });
 
     // If user doesn't exist, create a new one
-    if (!user) {
+    if (user === null) {
       user = await userService.createUser({ address, os, src: src || "" });
-    }
-
-    if (user.deletedAt) {
-      throw new UnauthorizedError(MESSAGE.ERROR.ACCOUNT_HAS_BEEN_DISABLED);
     }
 
     req.user = { ...user, countThemes: user.userThemes ? user.userThemes.length : 0 };
