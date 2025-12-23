@@ -22,10 +22,7 @@ export const checkAuth = async (
 
     // If user doesn't exist, create a new one
     if (!user) {
-      user = await userService.createUser({ address, src: src || "" });
-      if (!user) {
-        throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
-      }
+      user = await userService.createUser({ address, os, src: src || "" });
     }
 
     if (user.deletedAt) {
