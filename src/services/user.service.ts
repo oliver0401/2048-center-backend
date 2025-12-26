@@ -6,6 +6,9 @@ export const createUser = async (
   data: Partial<UserEntity>
 ): Promise<Omit<UserEntity, "password"> | null> => {
   const { address, os, src } = data;
+  console.log("=================================data=================================");
+  console.log(data);
+  console.log("=================================data=================================");
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const existingUser = await userRepository.findOne({
@@ -24,16 +27,16 @@ export const createUser = async (
 export const getOneUser = async (
   data: Partial<UserEntity>
 ): Promise<UserEntity> | null => {
-  const { os, ...params } = data;
+  const { os, src, ...params } = data;
   const userRepository: Repository<UserEntity> =
     AppDataSource.getRepository(UserEntity);
   const findUser: UserEntity = await userRepository.findOne({
     relations: ["userThemes"],
-    where: { ...params },
+    where: { address: data.address },
   });
 
   if (!findUser) {
-    const newUser = await createUser({ address: data.address, os: data.os });
+    const newUser = await createUser({ address: data.address, os: data.os, src: data.src || "" });
     return newUser;
   }
 
@@ -87,4 +90,53 @@ export const updateItem = async (
 
   const updateUser = await userRepository.save(findUser);
   return updateUser;
+};
+
+export const countUsersFromStart = async (
+  startDate?: string,
+  endDate?: string
+): Promise<Array<{ date: string; count: number }>> => {
+  const userRepository: Repository<UserEntity> =
+    AppDataSource.getRepository(UserEntity);
+  
+  const queryBuilder = userRepository
+    .createQueryBuilder("user")
+    .select("DATE(user.created_at)", "date")
+    .addSelect("COUNT(*)", "count")
+    .groupBy("DATE(user.created_at)");
+
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    
+    queryBuilder.where("user.created_at BETWEEN :startDate AND :endDate", {
+      startDate: start,
+      endDate: end,
+    });
+  } else if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    
+    queryBuilder.where("user.created_at >= :startDate", {
+      startDate: start,
+    });
+  } else if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    
+    queryBuilder.where("user.created_at <= :endDate", {
+      endDate: end,
+    });
+  }
+
+  queryBuilder.orderBy("DATE(user.created_at)", "ASC");
+
+  const results = await queryBuilder.getRawMany();
+  
+  return results.map((result) => ({
+    date: result.date ? new Date(result.date).toISOString().split("T")[0] : "",
+    count: parseInt(result.count, 10),
+  }));
 };

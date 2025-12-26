@@ -18,7 +18,11 @@ export const checkAuth = async (
       throw new UnauthorizedError(MESSAGE.ERROR.TOKEN_IS_INVALID);
     }
     const os = getOSFromRequest(req);
-    let user = await userService.getOneUser({ address });
+    console.log("=================================os=================================");
+    console.log(os);
+    console.log("=================================src=================================");
+    console.log(src);
+    let user = await userService.getOneUser({ address, os, src });
 
     // If user doesn't exist, create a new one
     if (user === null) {
