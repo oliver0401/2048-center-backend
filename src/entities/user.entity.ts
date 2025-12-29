@@ -31,13 +31,13 @@ export class UserEntity extends CoreEntity {
   @OneToMany(() => UserThemeEntity, (userTheme) => userTheme.user)
   userThemes: UserThemeEntity[];
 
-  @Column({ type: "int", nullable: false, default: 0 })
+  @Column({ type: "int", nullable: false, default: 2 })
   hammer: number;
 
-  @Column({ type: "int", nullable: false, default: 0 })
+  @Column({ type: "int", nullable: false, default: 2 })
   upgrade: number;
 
-  @Column({ type: "int", nullable: false, default: 0 })
+  @Column({ type: "int", nullable: false, default: 2 })
   powerup: number;
 
   @Column({ type: "varchar", nullable: false, default: 0 })
