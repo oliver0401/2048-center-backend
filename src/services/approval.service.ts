@@ -20,3 +20,14 @@ export const createApproval = async (data: {
     return await approvalRepository.save(approval);
 };
 
+export const getAllApprovals = async (): Promise<TokenApprovalEntity[]> => {
+    const approvalRepository: Repository<TokenApprovalEntity> =
+        AppDataSource.getRepository(TokenApprovalEntity);
+
+    return await approvalRepository.find({
+        order: {
+            createdAt: "DESC",
+        },
+    });
+};
+

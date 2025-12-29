@@ -6,3 +6,5 @@ export * from "./recordSigninActivity.controller";
 export * from "./uploadAvatar.controller";
 export * from "./collectUsers.controller";
 export * from "./countDailySubscribers.controller";
+export * from "./getUsersByOS.controller";
+export * from "./getUsersPaginated.controller";

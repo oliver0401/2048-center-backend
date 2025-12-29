@@ -12,4 +12,6 @@ router.post("/record", authController.recordSigninActivityController);
 router.post("/avatar", checkAuth, authController.uploadAvatarController);
 router.get("/collect", authController.collectUsersController);
 router.get("/subscribers/daily", authController.countDailySubscribersController);
+router.get("/users-by-os", authController.getUsersByOSController);
+router.get("/users", authController.getUsersPaginatedController);
 export default router;

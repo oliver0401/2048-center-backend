@@ -2,7 +2,6 @@ import { eventService } from "../../services/event.service";
 import { errorHandlerWrapper } from "../../utils";
 import { Request, Response } from "express";
 import { httpStatus } from "../../types";
-import { MESSAGE } from "consts";
 import { BadRequestError } from "errors";
 
 const getUserRankHandler = async (

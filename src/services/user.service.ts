@@ -140,3 +140,60 @@ export const countUsersFromStart = async (
     count: parseInt(result.count, 10),
   }));
 };
+
+export const countUsersByOS = async (): Promise<Array<{ os: string; count: number }>> => {
+  const userRepository: Repository<UserEntity> =
+    AppDataSource.getRepository(UserEntity);
+  
+  const results = await userRepository
+    .createQueryBuilder("user")
+    .select("user.os", "os")
+    .addSelect("COUNT(*)", "count")
+    .groupBy("user.os")
+    .getRawMany();
+  
+  return results.map((result) => ({
+    os: result.os || "Unknown",
+    count: parseInt(result.count, 10),
+  }));
+};
+
+export const getUsersPaginated = async (
+  page: number = 1,
+  limit: number = 10,
+  sortBy: string = 'createdAt',
+  sortOrder: 'ASC' | 'DESC' = 'DESC'
+): Promise<{ users: UserEntity[]; total: number; page: number; limit: number }> => {
+  const userRepository: Repository<UserEntity> =
+    AppDataSource.getRepository(UserEntity);
+  
+  const skip = (page - 1) * limit;
+  
+  // Map frontend column names to database column names
+  const validSortColumns: { [key: string]: string } = {
+    address: 'address',
+    os: 'os',
+    maxScore: 'maxScore',
+    maxTile: 'maxTile',
+    maxMoves: 'maxMoves',
+    onboarded: 'onboarded',
+    createdAt: 'createdAt',
+  };
+  
+  const columnName = validSortColumns[sortBy] || 'createdAt';
+  
+  const [users, total] = await userRepository.findAndCount({
+    skip,
+    take: limit,
+    order: {
+      [columnName]: sortOrder,
+    },
+  });
+  
+  return {
+    users,
+    total,
+    page,
+    limit,
+  };
+};
